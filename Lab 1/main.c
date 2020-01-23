@@ -1,4 +1,7 @@
-main ()
+# include <stdio.h>
+# include "code_gen.c"
+int main ()
 {
-	statements ();
+	statements();
+	return 0;
 }

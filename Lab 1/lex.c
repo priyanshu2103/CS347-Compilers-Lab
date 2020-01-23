@@ -1,7 +1,7 @@
 #include "lex.h"
 #include <stdio.h>
 #include <ctype.h>
-
+#include <stdlib.h>
 
 char* yytext = ""; /* Lexeme (not '\0'
                       terminated)              */
@@ -78,7 +78,7 @@ int match(int token){
    /* Return true if "token" matches the
       current lookahead symbol.                */
 
-   if(Lookahead == -1)
+   if(Lookahead == -1)					// for the first time 
       Lookahead = lex();
 
    return token == Lookahead;
@@ -88,5 +88,5 @@ void advance(void){
 /* Advance the lookahead to the next
    input symbol.                               */
 
-    Lookahead = lex();
+    Lookahead = lex();					// every time after the first time, we are using advance()
 }
