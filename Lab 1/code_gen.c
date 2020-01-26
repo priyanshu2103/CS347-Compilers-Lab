@@ -4,6 +4,10 @@
 #include "lex.h"
 #include "name.c"
 #include "lex.c"
+#include <stdarg.h>
+
+#define MAXFIRST 16
+#define SYNCH SEMI
 
 char *factor(void);
 char *factor_div(void);
@@ -11,52 +15,193 @@ char *term(void);
 char *expression(void);
 char *final_expression(void);
 char *rel_final(void);
-
 char *newname(void);
 void freename(char *name);
-
+char *opt_stmt(void);
+int legal_lookahead(int,...);
 void statements()
 {
     /*  statements -> expression SEMI  |  expression SEMI statements  */
 
-    char *tempvar1;
+    char *tempvar1,*tempvar2;
 
     while(!match(EOI))     // this while loop handles the expression SEMI statements part
     {
-        tempvar1 = rel_final();
-
-        if(match(SEMI))
-            advance();
-        else
+    	//printf("hello %c \n",*yytext);
+    	if(match(ID))
+    	{
+    		//printf("0\n");
+			//printf("1\n");
+			char identifier[100];
+			char *p=yytext;
+			int i;
+			for(i=0;i<yyleng;i++)
+			{
+				identifier[i]=*p++;
+			}
+			identifier[i]='\0';
+			if(*p==':')
+			{
+				advance();
+				if(match(COL))
+				{
+					//printf("2\n");
+					advance();
+				    if(!match(EQ))
+					{
+						fprintf( stderr, "Line no. %d: wrong assignment\n", yylineno );
+						return;
+					}
+					else
+					{
+						//printf("3\n");
+						advance();
+						tempvar1 = rel_final(); // write printf for id .........................
+					    printf("    %s <- %s\n", identifier, tempvar1);
+						if(match(SEMI))
+		    			advance();
+				        else
+			            {
+			            	fprintf( stderr, "Line no. %d: Insert missing semicolon\n", yylineno );
+			            	freename(tempvar1);
+			            	return;
+			            }
+				        freename(tempvar1);
+					}	
+				}
+			}
+			else
+			{
+				//printf("4\n");
+				tempvar1 = rel_final();
+				if(match(SEMI))
+				advance();
+		        else
+	            {
+	            	fprintf( stderr, "Line no. %d: Insert missing semicolon\n", yylineno );
+	            	freename(tempvar1);
+	            	return;
+	            }
+		        freename( tempvar1 );	
+			}
+    	}
+    	else if(match(IF))
+    	{
+    		//printf("5\n");
+    		advance();
+    		tempvar1=rel_final();
+    		printf("    IF %s THEN \n", tempvar1);
+    		if(match(THEN))
+    		{
+    			advance();
+    			statements();
+    		}
+    		else
+    		{
+    			fprintf( stderr, "Line no. %d: Missing THEN\n", yylineno );
+    			return;
+    		}
+    	}
+    	else if(match(WHILE))
+    	{
+    		//printf("6\n");
+    		advance();
+    		tempvar1=rel_final();
+    		printf("    WHILE %s DO \n", tempvar1);
+    		if(match(DO))
+    		{
+    			advance();
+    			statements();
+    		}
+    		else
+    		{
+    			fprintf( stderr, "Line no. %d: Missing DO\n", yylineno );
+    			return;	
+    		}
+    	}
+    	else if(match(BEGIN))     // Begin opt_stmt End
+    	{
+    		//printf("7\n");
+    		advance();
+    		if(legal_lookahead(END,0))
+    		{
+    			printf("BEGIN END\n");
+    		}
+    		else
+    		{
+    			// see the return value
+    			printf("BEGIN\n");
+    			opt_stmt();
+    			printf("END\n");
+    		}
+        }  
+        else if(match(NUM_OR_ID))
+        {
+        	tempvar1 = rel_final();
+			if(match(SEMI))
+			advance();
+	        else
             {
             	fprintf( stderr, "Line no. %d: Insert missing semicolon\n", yylineno );
             	freename(tempvar1);
             	return;
             }
-        freename( tempvar1 );
+	        freename( tempvar1 );
+        }  
     }
+}
+char *opt_stmt()
+{
+	//char  *tempvar1, *tempvar2;
+
+    statements();
+    while( !match(EOI) && !match(END))
+    {
+        advance();
+        statements();
+        // SEE this printf ..........................printf("    %s  %s\n", tempvar1, tempvar2 );
+        //freename( tempvar2 );
+    }
+    if(match(EOI))
+	{
+		fprintf( stderr, "Line no. %d: Missing END\n", yylineno );
+		return;		
+	}	
+    
 }
 char *rel_final()
 {
     /*  rel_final->final_expr|final_expr<final_expr|final_expr=final_expr|final_expr>final_expr */
 //..............................TO-DO.........................
-    // char *tempvar1;
+    char  *tempvar1, *tempvar2;
 
-    // while(!match(EOI))     // this while loop handles the expression SEMI statements part
-    // {
-    //     tempvar1 = final_expression();
-
-    //     if(match(SEMI))
-    //         advance();
-    //     else
-    //         {
-    //         	fprintf( stderr, "Line no. %d: Insert missing semicolon\n", yylineno );
-    //         	freename(tempvar1);
-    //         	return;
-    //         }
-    //     freename( tempvar1 );
-    // }
-    return final_expression();
+    tempvar1 = final_expression();
+    while( match( LT ) || match(GT) || match(EQ) )
+    {
+    	if(match(LT))
+    	{
+    		advance();
+	        tempvar2 = final_expression();
+	        printf("    %s < %s\n", tempvar1, tempvar2 );
+	        //freename( tempvar2 );
+    	}
+    	else if(match(GT))
+    	{
+    		advance();
+	        tempvar2 = final_expression();
+	        printf("    %s > %s\n", tempvar1, tempvar2 );
+	        //freename( tempvar2 );
+    	}
+    	else
+    	{
+    		advance();
+	        tempvar2 = final_expression();
+	        printf("    %s = %s\n", tempvar1, tempvar2 );
+	        //freename( tempvar2 );
+    	}
+    	tempvar1=tempvar2;
+    }
+    return tempvar1;
 }
 
 char *final_expression()
@@ -127,7 +272,7 @@ char *factor()
 {
     char *tempvar1;
 
-    if( match(NUM_OR_ID) )
+    if( match(NUM_OR_ID) || match(ID))
     {
 	/* Print the assignment instruction. The %0.*s conversion is a form of
 	 * %X.Ys, where X is the field width and Y is the maximum number of
@@ -156,8 +301,7 @@ char *factor()
     return tempvar1;
 }
 
-int	legal_lookahead(  first_arg )
-int	first_arg;
+int	legal_lookahead(int first_arg, ...)
 {
     /* Simple error detection and recovery. Arguments are a 0-terminated list of
      * those tokens that can legitimately come next in the input. If the list is
@@ -171,7 +315,7 @@ int	first_arg;
 
     va_list  	args;
     int		tok;
-    int		lookaheads[MAXFIRST], *p = lookaheads, *current;
+    int		lookaheads[MAXFIRST], *p = lookaheads, *curr;
     int		error_printed = 0;
     int		rval	      = 0;
 
@@ -190,24 +334,26 @@ int	first_arg;
 
 	while( !match( SYNCH ) )
 	{
-	    for( current = lookaheads; current < p ; ++current )
-		if( match( *current ) )
+	    for( curr = lookaheads; curr < p ; ++curr )    // if any of the arguments matches, it return 1
 		{
-		    rval = 1;
-		    goto exit;
+			if( match( *curr ) )
+			{
+			    rval = 1;
+			    goto exit;
+			}
 		}
 
-	    if( !error_printed )
+	    if( !error_printed )				// if none of the arguments matches, print error (only once)
 	    {
-		fprintf( stderr, "Line %d: Syntax error\n", yylineno );
-		error_printed = 1;
+			fprintf( stderr, "Line %d: Syntax error\n", yylineno );
+			error_printed = 1;
 	    }
 
 	    advance();
 	}
-    }
+}
 
 exit:
-    va_end( args )
+    va_end( args );
     return rval;
 }

@@ -7,7 +7,7 @@
 #define LP 6	/* (				*/
 #define RP 7	/* )				*/
 #define NUM_OR_ID 8	/* Decimal Number or Identifier */
-#define ID 9
+#define ID 9  
 #define IF 10
 #define THEN 11
 #define WHILE 12
@@ -17,6 +17,7 @@
 #define LT 16
 #define GT 17
 #define EQ 18
+#define COL 19
 extern char *yytext;		/* in lex.c			*/
 extern int yyleng;
 extern int yylineno;
