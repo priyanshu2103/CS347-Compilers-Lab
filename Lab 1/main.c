@@ -6,7 +6,7 @@
 #include "lex.c"
 int main ()
 {
-	FILE * fp_sym = fopen("./symTable.txt", "w");
+	FILE * fp_sym = fopen("./symbolTable.txt", "w");
 	fclose(fp_sym);
 	//FILE * fp_tok = fopen("./token.txt", "w");
 	int current_tok;
@@ -74,14 +74,14 @@ int main ()
         case NUM_OR_ID:
         {
         	char identifier[100];
-			char *p=yytext;
-			int i;
-			for(i=0;i<yyleng;i++)
-			{
-				identifier[i]=*p++;
-			}
-			identifier[i]='\0';
-			printf( "%s\n", identifier);
+          char *p=yytext;
+          int i;
+          for(i=0;i<yyleng;i++)
+          {
+            identifier[i]=*p++;
+          }
+          identifier[i]='\0';
+          printf( "%s\n", identifier);
         }
         //printf(fp_tok,"<const,%s>",val);
         break;
@@ -95,7 +95,7 @@ int main ()
 				identifier[i]=*p++;
 			}
 			identifier[i]='\0';
-        	fp_temp = fopen("./symTable.txt", "r");
+        	fp_temp = fopen("./symbolTable.txt", "r");
         	char symText[1024];
         	int count=0;
 
@@ -115,7 +115,7 @@ int main ()
 
 
           if(count >= id_seq-1){
-            FILE* fp_temp =  fopen("./symTable.txt", "a+");
+            FILE* fp_temp =  fopen("./symbolTable.txt", "a+");
           	fprintf(fp_temp, "%s %d\n", identifier, id_seq);
           	printf( "< ID,%d >", id_seq);
           	id_seq++;
