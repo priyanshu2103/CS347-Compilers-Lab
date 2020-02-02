@@ -8,17 +8,16 @@ int main ()
 {
 	FILE * fp_sym = fopen("./symbolTable.txt", "w");
 	fclose(fp_sym);
-	//FILE * fp_tok = fopen("./token.txt", "w");
 	int current_tok;
 	int id_seq;
 	FILE * fp_temp;
 
 	id_seq=1;
-	current_tok=lex();
-	while(current_tok != EOI)
+	current_tok=lex();                     //lex() defined in lex.c
+	while(current_tok != EOI)              //EOI and other MACROS in lex.h
 	{
 		//printf("%d\n",current_tok);
-		switch(current_tok)
+		switch(current_tok)                 //print appropriate token
       {
         case SEMI:
         printf("< ; >");
@@ -71,9 +70,9 @@ int main ()
         case END:
         printf("< END >");
           break;
-        case NUM_OR_ID:
+        case NUM_OR_ID:                   //case of ID checked before num in lex, so effectively this is NUM only.
         {
-        	char identifier[100];
+        	char identifier[100];            //yytext and yyleng defined in lex.c, to track current position in input
           char *p=yytext;
           int i;
           for(i=0;i<yyleng;i++)
@@ -81,40 +80,33 @@ int main ()
             identifier[i]=*p++;
           }
           identifier[i]='\0';
-          printf( "%s\n", identifier);
+          printf( "< CONST,%s >", identifier);
         }
-        //printf(fp_tok,"<const,%s>",val);
+        
         break;
         case ID:
         {
         	char identifier[100];
-			char *p=yytext;
-			int i;
-			for(i=0;i<yyleng;i++)
-			{
-				identifier[i]=*p++;
-			}
-			identifier[i]='\0';
-        	fp_temp = fopen("./symbolTable.txt", "r");
+    			char *p=yytext;
+    			int i;
+    			for(i=0;i<yyleng;i++)
+    			{
+    				identifier[i]=*p++;
+    			}
+		    	identifier[i]='\0';
+        	fp_temp = fopen("./symbolTable.txt", "r");    //make a symbol table to save all encountered ID
         	char symText[1024];
         	int count=0;
 
-        	while(fgets(symText, INT_MAX, fp_temp) != NULL){
-            
-
-            if(strcmp(strtok(symText, " "), identifier) == 0){
+        	while(fgets(symText, INT_MAX, fp_temp) != NULL){       //read each line of symbol table and compare with current identifier
+            if(strcmp(strtok(symText, " "), identifier) == 0)
               break;
-            }
             count++;
-
           }
 
           fclose(fp_temp);
 
-          
-
-
-          if(count >= id_seq-1){
+          if(count >= id_seq-1){                                  //if new identifier, put it in symbol table and print its token
             FILE* fp_temp =  fopen("./symbolTable.txt", "a+");
           	fprintf(fp_temp, "%s %d\n", identifier, id_seq);
           	printf( "< ID,%d >", id_seq);
@@ -133,11 +125,12 @@ int main ()
        	}  
         default: break;
        }
-       current_tok=lex();
+       printf("\n");
+       current_tok=lex(); //get next token
+
 	}
 
 
 	//statements();
-	//fclose(fp_tok);
 	return 0;
 }
