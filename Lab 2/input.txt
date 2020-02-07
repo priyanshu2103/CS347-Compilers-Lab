@@ -1,4 +1,7 @@
-// Class Declaration
+// class Declaration
+
+/* class extends  "class" // */
+public class Aniket
 public class Animal
 {
   public Animal()
@@ -51,7 +54,7 @@ public class Dog extends Animal
 	@Override
 	public String toString()
 	{
-		return("Hi my name is "+ this.getName()+
+		return(" class extends //* Hi my /" name is "+ this.getName()+
 			".\nMy breed,age and color are " +
 			this.getBreed()+"," + this.getAge()+
 			","+ this.getColor());

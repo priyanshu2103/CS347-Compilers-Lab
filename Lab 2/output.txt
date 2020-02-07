@@ -1,4 +1,4 @@
-Object Declarations: 2
-Class Definitions: 1
-Constructor Definitions: 1
+Object Declarations: 3
+Class Definitions: 3
+Constructor Definitions: 2
 Inherent Class Definitions: 1
