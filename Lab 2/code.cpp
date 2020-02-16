@@ -1,12 +1,3 @@
-// not yet considered cases where a declaration or definition goes onto multiple lines
-// also not handled if multiple commands in single line separated by ;
-// also not handled if erroneous input like class <no name mentioned> or if extends unknown class
-// not handled obscure ways of creating object like Class.forName, clone(),desrealization etc.
-// just checks using new keyword and a previously defined class name
-// can check function definitions
-// ignore if comments are there
-
-//object declaration with contructor class karna hai?? https://www.javatpoint.com/how-many-ways-to-create-an-object-in-java
 #include <bits/stdc++.h>
 using namespace std;
 bool isbackslash(char c)
@@ -55,27 +46,23 @@ int main()
   int inh_class_def=0;
   bool commentflag=false;
   bool quoteflag=false;
-  unordered_map <string,int> mp;
-  unordered_map <string,int> Objmp;
-  ifstream ip;      // input from file
-  ofstream op;      // output from file
-  vector<string> lines;
+  unordered_map <string,int> mp;         // map of classes
+  unordered_map <string,int> Objmp;      // map of objects
+  ifstream ip;                           // input from file
+  ofstream op;                           // output from file
+  //vector<string> lines;
   string s;
   string t1="",t2="",t3="";
-  ip.open("fakeip.txt");
+  string inputfile;
+  cout<<"Give input file: ";
+  cin>>inputfile;
+  ip.open(inputfile);
   int ln=0;   // line number
   while (ip)
   {
     getline(ip,s);
     ln++;
-  //   lines.push_back(s);
-  // }
-  // int ln=lines.size();
-  //
-  // for (int i=0;i<ln;i++)
-  // {
-  // s=lines[i];
-    ///cout<<"line "<<ln<<" string is ::: "<<s<<endl;
+
     string t="";
     int len=s.length();
     int j=0;
@@ -86,11 +73,11 @@ int main()
       t2=t1;
       t1=t;
       t="";
-      if(commentflag || quoteflag)
+      if(commentflag || quoteflag)        
       {
         if(commentflag)
         {
-          //cout<<"comment in line "<<ln<<endl;
+
           while(j<len-1 && iscomment(s[j],s[j+1])!=3)
           {
             if(isbackslash(s[j]))
@@ -228,14 +215,7 @@ int main()
           cout<<"Class declaration incomplete at line "<<ln<<endl;
         }
       }
-      // else if(t=="extends")
-      // {
-      //   if(class_flag)
-      //   {
-      //     inh_class_def++;
-      //     class_flag=false;
-      //   }
-      // }
+
       else if(t=="new" && j<len && isspace(s[j]))
       {
         //cout<<"found new, t1 = "<<t1<<" & t2 = "<<t2<<"\n";
