@@ -57,8 +57,8 @@ int main()
   bool quoteflag=false;
   unordered_map <string,int> mp;
   unordered_map <string,int> Objmp;
-  ifstream ip;
-  ofstream op;
+  ifstream ip;      // input from file
+  ofstream op;      // output from file
   vector<string> lines;
   string s;
   string t1="",t2="",t3="";
@@ -75,6 +75,7 @@ int main()
   // for (int i=0;i<ln;i++)
   // {
   // s=lines[i];
+    ///cout<<"line "<<ln<<" string is ::: "<<s<<endl;
     string t="";
     int len=s.length();
     int j=0;
@@ -89,6 +90,7 @@ int main()
       {
         if(commentflag)
         {
+          //cout<<"comment in line "<<ln<<endl;
           while(j<len-1 && iscomment(s[j],s[j+1])!=3)
           {
             if(isbackslash(s[j]))
@@ -145,7 +147,7 @@ int main()
           }
           quoteflag=false;
         }
-        else if(j<len && isquote(s[j]) && quoteflag && commentflag==false)
+        if(j<len && isquote(s[j]) && quoteflag && commentflag==false)
         {
           quoteflag=false;
         }
@@ -154,7 +156,7 @@ int main()
           j++;
           j++;
         }
-        if(j<len-1 && quoteflag==false && iscomment(s[j],s[j+1])==1)
+        if(j<len-1 && quoteflag==false && iscomment(s[j],s[j+1])==1 && commentflag==false)
         {
           j=len;
           break;
@@ -171,7 +173,7 @@ int main()
             }
             j++;
           }
-          if(j>=len)
+          if(j>=len-1)
           {
             break;
           }
@@ -189,15 +191,9 @@ int main()
         j++;
       }
       //cout<<"t = "<<t<<" t1 = "<<t1<<" t2 = "<<t2<<" t3 = "<<t3<<"\n";
-      if(t=="class" && isspace(s[j])) 
-      {
-        class_def++;
-        if(j>=len)
-        {
-          cout<<"class name not in line "<<ln<<endl;
-          exit(1);
-        }
+      if(t=="class" && j<len && isspace(s[j]))
 
+      {
         t="";
         while(j<len && (isspace(s[j]) || !isalnum(s[j])))
         {
@@ -208,30 +204,41 @@ int main()
           t+=s[j];
           j++;
         }
-        if(t=="")
+        if(t!="")
         {
-          cout<<"class name not in line "<<ln<<endl;
-          exit(1);
+          mp[t]=1;
+          class_def++;
+          t="";
+          while(j<len && (isspace(s[j]) || !isalnum(s[j])))
+          {
+            j++;
+          }
+          while(j<len && isalnum(s[j]))
+          {
+            t+=s[j];
+            j++;
+          }
+          if(t=="extends")
+          {
+            inh_class_def++;
+          }
         }
-        mp[t]=1;
-        class_flag=true;
-      }
-      else if(t=="extends")
-      {
-        if(class_flag)
+        else
         {
-          inh_class_def++;
-          class_flag=false;
+          cout<<"Class declaration incomplete at line "<<ln<<endl;
         }
       }
-      else if(t=="new")
+      // else if(t=="extends")
+      // {
+      //   if(class_flag)
+      //   {
+      //     inh_class_def++;
+      //     class_flag=false;
+      //   }
+      // }
+      else if(t=="new" && j<len && isspace(s[j]))
       {
         //cout<<"found new, t1 = "<<t1<<" & t2 = "<<t2<<"\n";
-        if(j>=len)
-        {
-          cout<<"class name not in line "<<ln<<endl;
-          exit(1);
-        }
         t="";
         while(j<len && (isspace(s[j]) || !isalnum(s[j])))
         {
@@ -246,11 +253,12 @@ int main()
         {
           if(j>=len)
           {
-            cout<<"constructor not called correctly while creating object "<<ln<<endl;
-            exit(1);
+            cout<<"constructor not called correctly while creating object at line "<<ln<<endl;
+            //exit(1);
           }
           if(s[j]=='(')
           {
+            //cout<<t2<< " added to object map\n";
             Objmp[t1]=1;
             obj_def++;
           }
@@ -262,14 +270,11 @@ int main()
         if(t1=="class" && mp.find(t2)!=mp.end() && j<len && s[j]=='(') //Classname obj = Classname.class.newInstance();
         {
           if(Objmp[t3]){
-            cout<<"ERROR, Object name declared more than once";
+            cout<<"ERROR, Object name declared more than once\n";
             exit(1);
           }
+          //cout<<t3<< " added to object map\n";
           Objmp[t3]=1;
-          obj_def++;
-        }
-        else if(j<len && s[j]=='(')
-        {
           obj_def++;
         }
       }
@@ -278,16 +283,18 @@ int main()
         //cout<<"found clone, t1 = "<<t1<<" t2 = "<<t2<<" t3 = "<<t3<<"\n";
         if(Objmp.find(t1)==Objmp.end())
         {
-          cout<<"Error, parent object not defined";
+          cout<<"Error, parent object not defined\n";
           exit(1);
         }
-        if(mp.find(t2)!=mp.end() && j<len && s[j]=='(') //eg: Dog obj = (Dog)obj1.clone();
+        if(mp.find(t2)!=mp.end() ) //eg: Dog obj = (Dog)obj1.clone();
         {
+          //cout<<t3<< " added to object map\n";
           Objmp[t3]=1;
           obj_def++;
         }
         else if(mp.find(t3)!=mp.end() && j<len && s[j]=='(')// eg: Dog obj = obj1.clone();
         {
+          //cout<<t2<< " added to object map\n";
           Objmp[t2]=1;
           obj_def++;
         }
