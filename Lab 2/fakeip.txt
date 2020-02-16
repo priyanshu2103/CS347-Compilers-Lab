@@ -1,19 +1,29 @@
-public class Animal
-{
-  public Animal()
-  {
-
-  }
+public class Calculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
 }
-public class Dog extends Animal
-{
+  
+public class CalculatorTest extends junit.framework.TestCase {
+  
+    public void testAddingTwoPositiveIntegers() throws Exception {
+        int expected = 11;
+        //int actual = new Calculator().add(4, 7);
+        assertEquals(expected, actual);
+    }
+  
+    public void testAddingTwoNegativeIntegers() throws Exception {
+        int expected = -11;
+        "int actual = new Calculator().add(-4, -7);"
+        assertEquals(expected, actual);
+    }
+  
+    /* public void testAddingNegativeIntegerToPositiveInteger() throws Exception {
+        int expected = -3;
+       int actual = new Calculator().add(4, -7);
+        assertEquals(expected, actual);
+    }*/
+}
+private class Random {
 	
 }
-
-	public static void main(String[] args)
-	{
-		
-    	Dog doggy = Dog.class.newInstance();
-		Dog obj2 = doggy.clone();
-		Dog obj3 = (Dog)doggy.clone();
-	}

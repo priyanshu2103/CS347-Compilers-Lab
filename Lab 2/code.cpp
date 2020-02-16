@@ -97,7 +97,7 @@ int main()
             }
             j++;
           }
-          if(j>=len)
+          if(j>=len-1)
           {
             break;
           }
@@ -177,7 +177,7 @@ int main()
           }
           commentflag=false;
         }
-        else if(j<len-1 && iscomment(s[j],s[j+1]) && commentflag && quoteflag==false)
+        else if(j<len-1 && iscomment(s[j],s[j+1])==3 && commentflag && quoteflag==false)
         {
           commentflag=false;
         }
@@ -189,7 +189,7 @@ int main()
         j++;
       }
       //cout<<"t = "<<t<<" t1 = "<<t1<<" t2 = "<<t2<<" t3 = "<<t3<<"\n";
-      if(t=="class" && mp.find(t1)==mp.end()) 
+      if(t=="class" && isspace(s[j])) 
       {
         class_def++;
         if(j>=len)
@@ -259,7 +259,7 @@ int main()
       else if(t=="newInstance")
       {
         //cout<<"found newInstance, t1 = "<<t1<<" t2 = "<<t2<<" t3 = "<<t3<<"\n";
-        if(t1=="class" && mp.find(t2)!=mp.end() && j<len && s[j]=='(')
+        if(t1=="class" && mp.find(t2)!=mp.end() && j<len && s[j]=='(') //Classname obj = Classname.class.newInstance();
         {
           if(Objmp[t3]){
             cout<<"ERROR, Object name declared more than once";
