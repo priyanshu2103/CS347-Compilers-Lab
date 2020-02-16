@@ -1,0 +1,19 @@
+public class Animal
+{
+  public Animal()
+  {
+
+  }
+}
+public class Dog extends Animal
+{
+	
+}
+
+	public static void main(String[] args)
+	{
+		
+    	Dog doggy = Dog.class.newInstance();
+		Dog obj2 = doggy.clone();
+		Dog obj3 = (Dog)doggy.clone();
+	}

@@ -65,6 +65,7 @@ public class Dog extends Animal
 		Dog tuffy = new Dog("tuffy","papillon", 5, "white");
     Animal a = new Dog("dane","great dane", 2, "black");
     Animal b = new Animal();
+    Dog doggy = Dog.class.newInstance();
 		System.out.println(tuffy.toString());
 	}
 }
