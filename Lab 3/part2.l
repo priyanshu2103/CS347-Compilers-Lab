@@ -5,8 +5,8 @@ of lines other for number of characters */
 #define PROJECT 2
 #define CARTESIAN_PRODUCT 3
 #define EQUI_JOIN 4
-#define LE 5
-#define RE 6
+#define LTE 5
+#define GTE 6
 #define NOT_EQUAL 7
 #define LT 8
 #define GT 9
@@ -29,8 +29,8 @@ of lines other for number of characters */
 "PROJECT|project"                         {printf("<%s> ",yytext ); return PROJECT;}
 "CARTESIAN_PRODUCT|cartesian_project"     {printf("<%s> ",yytext ); return CARTESIAN_PRODUCT;}
 "EQUI_JOIN|equi_join"                     {printf("<%s> ",yytext );	return EQUI_JOIN;}
-"<="                                      {printf("<%s> ",yytext ); return LE;}
-">="                                      {printf("<%s> ",yytext ); return RE;}
+"<="                                      {printf("<%s> ",yytext ); return LTE;}
+">="                                      {printf("<%s> ",yytext ); return GTE;}
 "!="                                      {printf("<%s> ",yytext ); return NOT_EQUAL;} 
 "<"                                       {printf("<%s> ",yytext ); return LT;}
 ">"                                       {printf("<%s> ",yytext ); return GT;} 
