@@ -1242,26 +1242,32 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 3:
-#line 33 "part2.y" /* yacc.c:1646  */
+        case 2:
+#line 32 "part2.y" /* yacc.c:1646  */
     {printf("Valid syntax\n");}
 #line 1249 "part2.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 3:
+#line 33 "part2.y" /* yacc.c:1646  */
+    {printf("Valid syntax\n");}
+#line 1255 "part2.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
 #line 34 "part2.y" /* yacc.c:1646  */
     {printf("Valid syntax\n");}
-#line 1255 "part2.tab.c" /* yacc.c:1646  */
+#line 1261 "part2.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 35 "part2.y" /* yacc.c:1646  */
     {printf("Valid syntax\n");}
-#line 1261 "part2.tab.c" /* yacc.c:1646  */
+#line 1267 "part2.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1265 "part2.tab.c" /* yacc.c:1646  */
+#line 1271 "part2.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

@@ -29,5 +29,5 @@ b   [ ]*
 {b}[A-Za-z_][0-9A-Za-z_]*{b}                    				{return ID; }
 {b}[0-9]+{b}                                    				{return INT; }
 {b}"'"{b}																		 						{return QUOTE;}
-{b}\n{b} 																								{ln++;return NEWLINE;}
+\n 																								{ln++;return NEWLINE;}
 %%
