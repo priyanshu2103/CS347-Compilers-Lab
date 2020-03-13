@@ -30,5 +30,10 @@ b   [ ]*
 {b}[A-Za-z_][0-9A-Za-z_]*{b}                    		{printf("%s ",yytext ); return ID; }
 {b}[0-9]+{b}                                    		{printf("%s ",yytext ); return INT; }
 {b}"'"{b}												{printf("%s ",yytext ); return QUOTE;}
+<<<<<<< HEAD
 \n 														{printf("%s ",yytext ); return NEWLINE; }
 %%
+=======
+\n 														{printf("%s ",yytext ); return NEWLINE; }		
+%%	
+>>>>>>> b9b34dfe2459f612d6b4864a4cdd9a89e9ea888c
