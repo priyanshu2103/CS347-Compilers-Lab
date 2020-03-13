@@ -60,7 +60,8 @@ extern int yydebug;
     RP = 270,
     ID = 271,
     INT = 272,
-    QUOTE = 273
+    QUOTE = 273,
+    NEWLINE = 274
   };
 #endif
 

@@ -71,7 +71,7 @@ extern int yylex(void);
 extern void yyterminate();
 void yyerror(const char *s);
 extern FILE* yyin;
-
+int ln=1;
 
 #line 77 "part2.tab.c" /* yacc.c:339  */
 
@@ -123,7 +123,8 @@ extern int yydebug;
     RP = 270,
     ID = 271,
     INT = 272,
-    QUOTE = 273
+    QUOTE = 273,
+    NEWLINE = 274
   };
 #endif
 
@@ -143,7 +144,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 147 "part2.tab.c" /* yacc.c:358  */
+#line 148 "part2.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -388,7 +389,7 @@ union yyalloc
 #define YYLAST   59
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  19
+#define YYNTOKENS  20
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
@@ -399,7 +400,7 @@ union yyalloc
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   273
+#define YYMAXUTOK   274
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -435,16 +436,16 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18
+      15,    16,    17,    18,    19
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    30,    30,    30,    30,    30,    31,    31,    31,    32,
-      32,    32,    32,    32,    32,    32,    32,    32,    33,    33,
-      34
+       0,    32,    32,    33,    34,    35,    37,    38,    39,    41,
+      42,    43,    44,    45,    46,    47,    48,    49,    51,    52,
+      53
 };
 #endif
 
@@ -455,7 +456,7 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "SELECT", "PROJECT", "CARTESIAN_PRODUCT",
   "EQUI_JOIN", "OPER", "LT", "GT", "LOG", "NOT", "COMMA", "DOT", "LP",
-  "RP", "ID", "INT", "QUOTE", "$accept", "stmt", "cond", "expr",
+  "RP", "ID", "INT", "QUOTE", "NEWLINE", "$accept", "stmt", "cond", "expr",
   "attr_list", "attr", YY_NULLPTR
 };
 #endif
@@ -466,7 +467,7 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274
 };
 # endif
 
@@ -544,20 +545,20 @@ static const yytype_int8 yycheck[] =
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,    14,    20,     8,     8,    16,     0,    11,
-      16,    21,    22,    24,    23,    24,    15,    22,     9,    10,
-       7,     8,     9,     9,    12,     5,     6,    14,    22,    17,
-      18,    24,    17,    18,    24,    17,    18,    24,    14,    23,
-      14,     8,    16,    16,    16,    16,    16,    16,    21,    15,
+       0,     3,     4,    14,    21,     8,     8,    16,     0,    11,
+      16,    22,    23,    25,    24,    25,    15,    23,     9,    10,
+       7,     8,     9,     9,    12,     5,     6,    14,    23,    17,
+      18,    25,    17,    18,    25,    17,    18,    25,    14,    24,
+      14,     8,    16,    16,    16,    16,    16,    16,    22,    15,
       18,    18,    18,    15,    15,     9,    14,    16,    15
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    19,    20,    20,    20,    20,    21,    21,    21,    22,
-      22,    22,    22,    22,    22,    22,    22,    22,    23,    23,
-      24
+       0,    20,    21,    21,    21,    21,    22,    22,    22,    23,
+      23,    23,    23,    23,    23,    23,    23,    23,    24,    24,
+      25
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1241,8 +1242,26 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
-#line 1246 "part2.tab.c" /* yacc.c:1646  */
+        case 3:
+#line 33 "part2.y" /* yacc.c:1646  */
+    {printf("Valid syntax\n");}
+#line 1249 "part2.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 4:
+#line 34 "part2.y" /* yacc.c:1646  */
+    {printf("Valid syntax\n");}
+#line 1255 "part2.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 35 "part2.y" /* yacc.c:1646  */
+    {printf("Valid syntax\n");}
+#line 1261 "part2.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1265 "part2.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1470,18 +1489,16 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 35 "part2.y" /* yacc.c:1906  */
+#line 55 "part2.y" /* yacc.c:1906  */
 
 
 int main()
 {
-yyin=stdin;
   yyparse();
-  printf("Valid\n");
+//  printf("Valid\n");
   return 0;
 }
 void yyerror(const char *s)
 {
-	printf("ERROR: %s\n", s);
-  exit(0);
+	printf("Line no %d ERROR: %s\n",ln,s);
 }
