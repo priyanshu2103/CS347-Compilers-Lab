@@ -1,6 +1,5 @@
-/* Declaring two counters one for number
-of lines other for number of characters */
 %{
+
 #include<stdbool.h>
 #include<string.h>
 #include<math.h>
@@ -14,12 +13,9 @@ bool quoteflag=false;
 char ClassName[1024][1024];
 int idx=0;
 bool searchClassName(char *);
+
 %}
 
-/***rule 1 counts the number of lines,
-rule 2 counts the number of characters
-and rule 3 specifies when to stop
-taking input***/
 %%
 
 "//"   {if(!quoteflag &&!multcomm)
@@ -30,8 +26,8 @@ taking input***/
 			printf("2 %s\n",yytext);
 		 }
 \n   {
-commentflag=false;
-}
+					commentflag=false;
+		 }
 "/*"   {if(!quoteflag && !commentflag)
 			{
 				multcomm=true;
@@ -134,9 +130,9 @@ class[ ][a-zA-Z][a-zA-Z0-9_]*[ ]extends[ ][a-zA-Z][a-zA-Z0-9_]*	 {if(!commentfla
 														  constr_def++;
 														 }
 }
+
 %%
 
-/*** User code section***/
 int yywrap(){}
 
 bool searchClassName(char* s)
