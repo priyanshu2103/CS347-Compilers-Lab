@@ -7,9 +7,6 @@ of lines other for number of characters */
 extern int ln;
 %}
 
-b   [ ]*
-
-%option noyywrap
 
 %%
 
@@ -31,3 +28,9 @@ b   [ ]*
 {b}"'"{b}																		 						{return QUOTE;}
 \n 																								{ln++;return NEWLINE;}
 %%
+
+int yywrap(){}
+int main()
+{
+	yylex();
+}
