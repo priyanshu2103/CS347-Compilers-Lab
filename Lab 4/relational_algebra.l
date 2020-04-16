@@ -2,7 +2,7 @@
 
 #include<stdlib.h>
 #include<string.h>
-#include "part2.tab.h"
+#include "relational_algebra.tab.h"
 
 %}
 

@@ -604,12 +604,12 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "part2.l"
-#line 2 "part2.l"
+#line 1 "relational_algebra.l"
+#line 2 "relational_algebra.l"
 
 #include<stdlib.h>
 #include<string.h>
-#include "part2.tab.h"
+#include "relational_algebra.tab.h"
 
 #line 615 "lex.yy.c"
 
@@ -829,7 +829,7 @@ YY_DECL
 		}
 
 	{
-#line 13 "part2.l"
+#line 13 "relational_algebra.l"
 
 
 #line 836 "lex.yy.c"
@@ -891,93 +891,93 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "part2.l"
+#line 15 "relational_algebra.l"
 {printf("%s ",yytext ); return SELECT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "part2.l"
+#line 16 "relational_algebra.l"
 {printf("%s ",yytext ); return PROJECT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "part2.l"
+#line 17 "relational_algebra.l"
 {printf("%s ",yytext ); return CARTESIAN_PRODUCT;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "part2.l"
+#line 18 "relational_algebra.l"
 {printf("%s ",yytext );	return EQUI_JOIN;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "part2.l"
+#line 19 "relational_algebra.l"
 {printf("%s ",yytext ); return OPER;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "part2.l"
+#line 20 "relational_algebra.l"
 {printf("%s ",yytext ); return LT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "part2.l"
+#line 21 "relational_algebra.l"
 {printf("%s ",yytext ); return GT;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "part2.l"
+#line 22 "relational_algebra.l"
 {printf("%s ",yytext ); return LOG;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "part2.l"
+#line 23 "relational_algebra.l"
 {printf("%s ",yytext ); return NOT;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "part2.l"
+#line 24 "relational_algebra.l"
 {printf("%s ",yytext ); return COMMA;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "part2.l"
+#line 25 "relational_algebra.l"
 {printf("%s ",yytext ); return DOT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "part2.l"
+#line 26 "relational_algebra.l"
 {printf("%s ",yytext ); return LP;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "part2.l"
+#line 27 "relational_algebra.l"
 {printf("%s ",yytext ); return RP;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "part2.l"
+#line 28 "relational_algebra.l"
 {printf("%s ",yytext ); return ID; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "part2.l"
+#line 29 "relational_algebra.l"
 {printf("%s ",yytext ); return INT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "part2.l"
+#line 30 "relational_algebra.l"
 {printf("%s ",yytext ); return QUOTE;}
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 31 "part2.l"
+#line 31 "relational_algebra.l"
 {printf("%s ",yytext ); return NEWLINE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 33 "part2.l"
+#line 33 "relational_algebra.l"
 ECHO;
 	YY_BREAK
 #line 984 "lex.yy.c"
@@ -1981,7 +1981,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 33 "part2.l"
+#line 33 "relational_algebra.l"
 
 
 

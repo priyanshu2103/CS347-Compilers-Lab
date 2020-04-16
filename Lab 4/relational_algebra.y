@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include<stdlib.h>
-#include "part2.tab.h"
+#include "relational_algebra.tab.h"
 extern int yylex(void);
 extern void yyterminate();
 void yyerror(const char *s);

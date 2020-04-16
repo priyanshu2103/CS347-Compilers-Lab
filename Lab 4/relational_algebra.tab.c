@@ -62,18 +62,18 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "part2.y" /* yacc.c:339  */
+#line 1 "relational_algebra.y" /* yacc.c:339  */
 
 
 #include <stdio.h>
 #include<stdlib.h>
-#include "part2.tab.h"
+#include "relational_algebra.tab.h"
 extern int yylex(void);
 extern void yyterminate();
 void yyerror(const char *s);
 
 
-#line 77 "part2.tab.c" /* yacc.c:339  */
+#line 77 "relational_algebra.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -92,9 +92,9 @@ void yyerror(const char *s);
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "part2.tab.h".  */
-#ifndef YY_YY_PART2_TAB_H_INCLUDED
-# define YY_YY_PART2_TAB_H_INCLUDED
+   by #include "relational_algebra.tab.h".  */
+#ifndef YY_YY_RELATIONAL_ALGEBRA_TAB_H_INCLUDED
+# define YY_YY_RELATIONAL_ALGEBRA_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -140,11 +140,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PART2_TAB_H_INCLUDED  */
+#endif /* !YY_YY_RELATIONAL_ALGEBRA_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 148 "part2.tab.c" /* yacc.c:358  */
+#line 148 "relational_algebra.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1248,7 +1248,7 @@ yyreduce:
   switch (yyn)
     {
       
-#line 1252 "part2.tab.c" /* yacc.c:1646  */
+#line 1252 "relational_algebra.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1476,7 +1476,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 38 "part2.y" /* yacc.c:1906  */
+#line 38 "relational_algebra.y" /* yacc.c:1906  */
 
 
 int main()
