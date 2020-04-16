@@ -49,25 +49,38 @@ extern int yydebug;
     PROJECT = 259,
     CARTESIAN_PRODUCT = 260,
     EQUI_JOIN = 261,
-    OPER = 262,
-    LT = 263,
-    GT = 264,
-    LOG = 265,
-    NOT = 266,
-    COMMA = 267,
-    DOT = 268,
-    LP = 269,
-    RP = 270,
-    ID = 271,
-    INT = 272,
-    QUOTE = 273,
-    NEWLINE = 274
+    LE = 262,
+    GE = 263,
+    EQ = 264,
+    NEQ = 265,
+    LT = 266,
+    GT = 267,
+    AND = 268,
+    OR = 269,
+    NOT = 270,
+    COMMA = 271,
+    DOT = 272,
+    LP = 273,
+    RP = 274,
+    ID = 275,
+    INT = 276,
+    QUOTE = 277,
+    NEWLINE = 278
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 16 "relational_algebra.y" /* yacc.c:1909  */
+int val;char * str;
+
+#line 81 "relational_algebra.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

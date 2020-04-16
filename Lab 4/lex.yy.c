@@ -378,8 +378,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 18
-#define YY_END_OF_BUFFER 19
+#define YY_NUM_RULES 22
+#define YY_END_OF_BUFFER 23
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -389,24 +389,24 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[168] =
     {   0,
-        0,    0,   19,   18,   17,   18,   16,   12,   13,   10,
-       11,   15,    6,    5,    7,   14,   14,   14,   14,   14,
-       14,   14,   14,   14,   14,   14,   14,   14,   14,   14,
-        0,   16,   12,   13,   10,   11,   15,    6,    5,    7,
-       14,   14,   14,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,   14,   14,   14,   16,   12,   13,   10,   11,
-       15,    6,    5,    5,    5,    7,    5,   14,   14,   14,
-       14,   14,   14,    8,   14,   14,   14,   14,   14,   14,
-        8,   14,   14,    5,    5,    5,    8,   14,   14,    9,
-        8,   14,   14,    8,   14,   14,    9,    8,   14,   14,
+        0,    0,   23,   22,   21,   22,   20,   16,   17,   14,
+       15,   19,    9,    7,   10,   18,   18,   18,   18,   18,
+       18,   18,   18,   18,   18,   18,   18,   18,   18,   18,
+        0,   20,   16,   17,   14,   15,   19,    9,    7,   10,
+       18,   18,   18,   18,   18,   18,   18,   18,   18,   18,
+       18,   18,   18,   18,   18,   20,   16,   17,   14,   15,
+       19,    9,    5,    8,    7,   10,    6,   18,   18,   18,
+       18,   18,   18,   12,   18,   18,   18,   18,   18,   18,
+       12,   18,   18,    5,    8,    6,   11,   18,   18,   13,
+       12,   18,   18,   11,   18,   18,   13,   12,   18,   18,
 
-        8,   14,   14,    9,   14,   14,    8,   14,   14,    9,
-       14,   14,   14,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,   14,    1,   14,   14,   14,    1,   14,   14,
-        2,    1,   14,   14,    2,    1,   14,   14,    2,   14,
-       14,    2,   14,    4,   14,    4,   14,    4,   14,    4,
-       14,   14,   14,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,    3,    3,    3,    3,    0
+       11,   18,   18,   13,   18,   18,   11,   18,   18,   13,
+       18,   18,   18,   18,   18,   18,   18,   18,   18,   18,
+       18,   18,   18,    1,   18,   18,   18,    1,   18,   18,
+        2,    1,   18,   18,    2,    1,   18,   18,    2,   18,
+       18,    2,   18,    4,   18,    4,   18,    4,   18,    4,
+       18,   18,   18,   18,   18,   18,   18,   18,   18,   18,
+       18,   18,    3,    3,    3,    3,    0
     } ;
 
 static yyconst YY_CHAR yy_ec[256] =
@@ -912,75 +912,95 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 19 "relational_algebra.l"
-{printf("%s ",yytext ); return OPER;}
+{printf("%s ",yytext ); return LE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 20 "relational_algebra.l"
-{printf("%s ",yytext ); return LT;}
+{printf("%s ",yytext ); return GE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 21 "relational_algebra.l"
-{printf("%s ",yytext ); return GT;}
+{printf("%s ",yytext ); return EQ;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 22 "relational_algebra.l"
-{printf("%s ",yytext ); return LOG;}
+{printf("%s ",yytext ); return NEQ;}              
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 23 "relational_algebra.l"
-{printf("%s ",yytext ); return NOT;}
+{printf("%s ",yytext ); return LT;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 24 "relational_algebra.l"
-{printf("%s ",yytext ); return COMMA;}
+{printf("%s ",yytext ); return GT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 25 "relational_algebra.l"
-{printf("%s ",yytext ); return DOT;}
+{printf("%s ",yytext ); return AND;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 26 "relational_algebra.l"
-{printf("%s ",yytext ); return LP;}
+{printf("%s ",yytext ); return OR;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 27 "relational_algebra.l"
-{printf("%s ",yytext ); return RP;}
+{printf("%s ",yytext ); return NOT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 28 "relational_algebra.l"
-{printf("%s ",yytext ); return ID; }
+{printf("%s ",yytext ); return COMMA;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 29 "relational_algebra.l"
-{printf("%s ",yytext ); return INT; }
+{printf("%s ",yytext ); return DOT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 30 "relational_algebra.l"
-{printf("%s ",yytext ); return QUOTE;}
+{printf("%s ",yytext ); return LP;}
 	YY_BREAK
 case 17:
-/* rule 17 can match eol */
 YY_RULE_SETUP
 #line 31 "relational_algebra.l"
-{printf("%s ",yytext ); return NEWLINE; }
+{printf("%s ",yytext ); return RP;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
+#line 32 "relational_algebra.l"
+{yylval.str= strdup(yytext);  printf("%s ",yytext ); return ID; }
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
 #line 33 "relational_algebra.l"
+{yylval.val= atoi(yytext);  printf("%s ",yytext ); return INT; }
+	YY_BREAK
+case 20:
+YY_RULE_SETUP
+#line 34 "relational_algebra.l"
+{printf("%s ",yytext ); return QUOTE;}
+	YY_BREAK
+case 21:
+/* rule 21 can match eol */
+YY_RULE_SETUP
+#line 35 "relational_algebra.l"
+{printf("%s ",yytext ); return NEWLINE; }
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+#line 37 "relational_algebra.l"
 ECHO;
 	YY_BREAK
-#line 984 "lex.yy.c"
+#line 1004 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1981,7 +2001,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 33 "relational_algebra.l"
+#line 37 "relational_algebra.l"
 
 
 

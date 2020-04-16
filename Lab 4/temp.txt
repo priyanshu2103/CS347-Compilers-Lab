@@ -4,3 +4,12 @@ PROJECT < name, salary> (Employee)
 (Employee) CARTESIAN_PRODUCT (Department)
 (Employee) EQUI_JOIN <Employee.empId = Department.eId>(Department)
 
+%union {int val; char * str;}
+%start stmts
+%token <str> SELECT
+%token <str> PROJECT
+%token <str> CARTESIAN_PRODUCT
+%token <str> EQUI_JOIN
+%token <operator> OPER
+%token <operator> LT
+%token <operator> GT
