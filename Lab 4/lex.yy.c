@@ -927,7 +927,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 22 "relational_algebra.l"
-{printf("%s ",yytext ); return NEQ;}              
+{printf("%s ",yytext ); return NEQ;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -977,7 +977,7 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 32 "relational_algebra.l"
-{yylval.str= strdup(yytext);  printf("%s ",yytext ); return ID; }
+{yylval.id_attributes.id_name= strdup(yytext);  printf("%s ",yytext ); return ID; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "relational_algebra.tab.h"
-#include "tree.h"
+#include "tree.c"
 extern int yylex(void);
 extern void yyterminate();
 void yyerror(const char *s);
@@ -42,36 +42,38 @@ enum id_val{attribute=1,table=2};
 %token QUOTE
 %token NEWLINE
 
+%type <a> cond
+%type <a> or_expr
+%type <a> expr
 
 %%
 
 stmts : stmt {printf("1\n");}| stmt NEWLINE| stmt NEWLINE stmts;
-stmt : SELECT LT cond GT LP ID RP {printf("2\n"); select_func($3,$6);}|
+stmt : SELECT LT cond GT LP ID RP {printf("2\n"); select_func($3,$6.id_name);}|
        PROJECT LT attr_list GT LP ID RP |
        LP ID RP CARTESIAN_PRODUCT LP ID RP |
        LP ID RP EQUI_JOIN LT mul_cond GT LP ID RP;
 cond : or_expr {printf("3\n"); $$=new_ast(0,$1,NULL);}|
        or_expr AND cond {$$=new_ast(1,$1,$3);};
 or_expr : expr {printf("4\n");$$=new_ast(0,$1,NULL);}|
-          expr OR or_expr {$$=new_ast(2,$1,$2);};
+          expr OR or_expr {$$=new_ast(2,$1,$3);};
 expr : ID LE ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(4,temp1,temp2);}|
        ID LE INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(4,temp1,temp2);}|
        ID GE ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(5,temp1,temp2);}|
        ID GE INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(5,temp1,temp2);}|
        ID EQ ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(6,temp1,temp2);}|
        ID EQ INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(6,temp1,temp2);}|
-       ID EQ QUOTE ID QUOTE {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_str($4); $$=new_ast(6,temp1,temp2);}|
+       ID EQ QUOTE ID QUOTE {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($4.id_name); $$=new_ast(6,temp1,temp2);}|
        ID NEQ ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(7,temp1,temp2);}|
        ID NEQ INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(7,temp1,temp2);}|
-       ID NEQ QUOTE ID QUOTE {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_str($3); $$=new_ast(7,temp1,temp2);}|
+       ID NEQ QUOTE ID QUOTE {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($4.id_name); $$=new_ast(7,temp1,temp2);}|
        ID LT ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(8,temp1,temp2);}|
        ID LT INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(8,temp1,temp2);}|
        ID GT ID {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_var($3.id_name); $$=new_ast(9,temp1,temp2);}|
        ID GT INT {struct ast *temp1=new_var($1.id_name); struct ast *temp2=new_num($3); $$=new_ast(9,temp1,temp2);}|
-       NOT expr;{$$=new_ast(3,$2,NULL);}
+       NOT expr {$$=new_ast(3,$2,NULL);};
 attr_list : ID |
             ID COMMA attr_list;
-attr : ID {printf("6\n");struct ast *temp=new_var($1.id_name); $$=new_ast(0,temp,NULL);};
 mul_cond : mul_or_expr |
            mul_or_expr AND mul_cond;
 mul_or_expr : mul_expr |

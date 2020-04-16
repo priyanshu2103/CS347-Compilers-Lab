@@ -68,6 +68,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "relational_algebra.tab.h"
+#include "tree.c"
 extern int yylex(void);
 extern void yyterminate();
 void yyerror(const char *s);
@@ -76,8 +77,12 @@ enum id_val{attribute=1,table=2};
 // not included float yet
 // use snprintf while printing so that we can print together at last or after each statement and not print if syntax error
 // need to see if rhs is int in <=,>=,<,> cases
+// 0 as it is
+// 1 and
+// 2 or
+// 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
 
-#line 81 "relational_algebra.tab.c" /* yacc.c:339  */
+#line 86 "relational_algebra.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -141,10 +146,10 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 16 "relational_algebra.y" /* yacc.c:355  */
-int val;char * str;
+#line 21 "relational_algebra.y" /* yacc.c:355  */
+struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;
 
-#line 148 "relational_algebra.tab.c" /* yacc.c:355  */
+#line 153 "relational_algebra.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -161,7 +166,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 165 "relational_algebra.tab.c" /* yacc.c:358  */
+#line 170 "relational_algebra.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -403,16 +408,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  9
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   78
+#define YYLAST   73
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  24
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  36
+#define YYNRULES  35
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  83
+#define YYNSTATES  82
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -460,10 +465,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    44,    44,    44,    44,    45,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,    62,    63,    64,    65,    66,    67,    68,    69,
-      70,    71,    72,    73,    74,    75,    76
+       0,    51,    51,    51,    51,    52,    53,    54,    55,    56,
+      57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+      77,    78,    79,    80,    81,    82
 };
 #endif
 
@@ -475,8 +480,8 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "SELECT", "PROJECT", "CARTESIAN_PRODUCT",
   "EQUI_JOIN", "LE", "GE", "EQ", "NEQ", "LT", "GT", "AND", "OR", "NOT",
   "COMMA", "DOT", "LP", "RP", "ID", "INT", "QUOTE", "NEWLINE", "$accept",
-  "stmts", "stmt", "cond", "or_expr", "expr", "attr_list", "attr",
-  "mul_cond", "mul_or_expr", "mul_expr", "mul_attr", YY_NULLPTR
+  "stmts", "stmt", "cond", "or_expr", "expr", "attr_list", "mul_cond",
+  "mul_or_expr", "mul_expr", "mul_attr", YY_NULLPTR
 };
 #endif
 
@@ -491,10 +496,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -21
+#define YYPACT_NINF -29
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-21)))
+  (!!((Yystate) == (-29)))
 
 #define YYTABLE_NINF -1
 
@@ -505,15 +510,15 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -2,     2,     4,    -3,    39,     1,    -6,    20,    22,   -21,
-      -2,    -6,   -21,    30,    31,    29,    -4,    33,    32,    24,
-     -21,   -21,    28,    -6,    -6,    11,    13,   -10,     6,    15,
-      17,    34,    20,    35,    36,    37,   -21,   -21,   -21,   -21,
-     -21,   -21,   -21,    38,   -21,   -21,    40,   -21,   -21,   -21,
-     -21,   -21,    41,   -21,    42,    43,    45,    27,    44,    46,
-      48,    51,    47,    56,    57,    61,   -21,   -21,   -21,   -21,
-     -21,    52,    55,    43,    43,    43,   -21,    54,   -21,   -21,
-     -21,    58,   -21
+      -3,    18,    19,    -8,    31,    -9,    -7,    12,    15,   -29,
+      -3,    -7,    -5,    21,    22,    23,    20,    26,    14,   -29,
+     -29,     1,     3,   -11,    -4,     5,     7,    24,    -7,    -7,
+      12,    25,    27,    28,   -29,   -29,   -29,   -29,   -29,   -29,
+      29,   -29,   -29,    30,   -29,   -29,   -29,   -29,    32,   -29,
+     -29,   -29,    33,    34,    35,    36,    37,    38,    41,    42,
+      39,    50,    51,    49,    56,   -29,   -29,   -29,   -29,   -29,
+      46,    52,    35,    35,    35,   -29,    47,   -29,   -29,   -29,
+      53,   -29
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -522,28 +527,28 @@ static const yytype_int8 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     0,     0,     2,     0,     0,     0,     1,
-       3,     0,    30,     0,     9,    11,     0,     0,    28,     0,
-       4,    27,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    10,    12,    14,    13,
-      16,    15,    18,     0,    17,    21,     0,    20,    24,    23,
-      26,    25,     0,    29,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    31,    33,     0,     5,    19,    22,     6,
-       7,     0,     0,     0,     0,     0,    36,     0,    32,    34,
-      35,     0,     8
+       3,     0,     0,     0,     9,    11,    28,     0,     0,     4,
+      27,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    13,    14,    15,    16,    17,    18,
+       0,    20,    21,     0,    23,    24,    25,    26,     0,    10,
+      12,    29,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    30,    32,     0,    19,    22,     5,     6,     7,
+       0,     0,     0,     0,     0,    35,     0,    31,    33,    34,
+       0,     8
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -21,    65,   -21,    53,    26,    67,    19,    -7,   -19,   -18,
-     -21,   -20
+     -29,    58,   -29,    13,    11,    40,    16,   -28,   -26,   -29,
+      -1
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4,     5,    13,    14,    15,    17,    16,    62,    63,
-      64,    65
+      -1,     4,     5,    13,    14,    15,    17,    61,    62,    63,
+      64
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -551,26 +556,26 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      18,     1,     2,    25,    26,    27,    28,    29,    30,    11,
-      12,    42,    43,     6,    12,     7,     3,     8,    39,    41,
-      44,    47,    49,    51,    10,    18,    12,    45,    46,    33,
-      34,    12,    38,    12,    40,    12,    48,    12,    50,     9,
-      12,    19,    22,    24,    23,    31,    35,    55,    32,    67,
-      37,    53,    52,    54,    78,    80,    79,    56,    57,    72,
-      58,    59,    60,    61,    66,    69,    68,    70,    71,    73,
-      75,    74,    76,    77,    81,    20,    36,    82,    21
+       1,     2,    21,    22,    23,    24,    25,    26,    11,    38,
+      39,    40,     8,    12,    10,     3,    41,    42,    43,    32,
+      33,    34,    35,    36,    37,    44,    45,    46,    47,     6,
+       7,     9,    16,    27,    18,    28,    30,    29,    31,    54,
+      50,    49,    48,    52,    77,    53,    51,    78,     0,    55,
+      56,    20,    57,    58,    59,    60,    70,    67,    65,    66,
+      68,    69,    71,    73,    72,    74,    75,    80,    19,     0,
+      76,     0,    81,    79
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       7,     3,     4,     7,     8,     9,    10,    11,    12,    15,
-      20,    21,    22,    11,    20,    11,    18,    20,    25,    26,
-      27,    28,    29,    30,    23,    32,    20,    21,    22,     5,
-       6,    20,    21,    20,    21,    20,    21,    20,    21,     0,
-      20,    19,    12,    14,    13,    12,    18,    11,    16,    22,
-      24,    32,    18,    18,    73,    75,    74,    20,    20,    12,
-      20,    20,    20,    20,    19,    19,    22,    19,    17,    13,
-       9,    14,    20,    18,    20,    10,    23,    19,    11
+       3,     4,     7,     8,     9,    10,    11,    12,    15,    20,
+      21,    22,    20,    20,    23,    18,    20,    21,    22,     5,
+       6,    20,    21,    20,    21,    20,    21,    20,    21,    11,
+      11,     0,    20,    12,    19,    13,    16,    14,    12,    11,
+      29,    28,    18,    18,    72,    18,    30,    73,    -1,    20,
+      20,    11,    20,    20,    20,    20,    17,    19,    22,    22,
+      19,    19,    12,    14,    13,     9,    20,    20,    10,    -1,
+      18,    -1,    19,    74
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -578,14 +583,14 @@ static const yytype_uint8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     3,     4,    18,    25,    26,    11,    11,    20,     0,
-      23,    15,    20,    27,    28,    29,    31,    30,    31,    19,
-      25,    29,    12,    13,    14,     7,     8,     9,    10,    11,
-      12,    12,    16,     5,     6,    18,    27,    28,    21,    31,
-      21,    31,    21,    22,    31,    21,    22,    31,    21,    31,
-      21,    31,    18,    30,    18,    11,    20,    20,    20,    20,
-      20,    20,    32,    33,    34,    35,    19,    22,    22,    19,
-      19,    17,    12,    13,    14,     9,    20,    18,    32,    33,
-      35,    20,    19
+      23,    15,    20,    27,    28,    29,    20,    30,    19,    25,
+      29,     7,     8,     9,    10,    11,    12,    12,    13,    14,
+      16,    12,     5,     6,    20,    21,    20,    21,    20,    21,
+      22,    20,    21,    22,    20,    21,    20,    21,    18,    27,
+      28,    30,    18,    18,    11,    20,    20,    20,    20,    20,
+      20,    31,    32,    33,    34,    22,    22,    19,    19,    19,
+      17,    12,    13,    14,     9,    20,    18,    31,    32,    34,
+      20,    19
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -594,7 +599,7 @@ static const yytype_uint8 yyr1[] =
        0,    24,    25,    25,    25,    26,    26,    26,    26,    27,
       27,    28,    28,    29,    29,    29,    29,    29,    29,    29,
       29,    29,    29,    29,    29,    29,    29,    29,    30,    30,
-      31,    32,    32,    33,    33,    34,    35
+      31,    31,    32,    32,    33,    34
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -603,7 +608,7 @@ static const yytype_uint8 yyr2[] =
        0,     2,     1,     2,     3,     7,     7,     7,    10,     1,
        3,     1,     3,     3,     3,     3,     3,     3,     3,     5,
        3,     3,     5,     3,     3,     3,     3,     2,     1,     3,
-       1,     1,     3,     1,     3,     3,     3
+       1,     3,     1,     3,     3,     3
 };
 
 
@@ -1280,43 +1285,133 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 44 "relational_algebra.y" /* yacc.c:1646  */
+#line 51 "relational_algebra.y" /* yacc.c:1646  */
     {printf("1\n");}
-#line 1286 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1291 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 45 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("2\n");}
-#line 1292 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 52 "relational_algebra.y" /* yacc.c:1646  */
+    {printf("2\n"); select_func((yyvsp[-4].a),(yyvsp[-1].id_attributes).id_name);}
+#line 1297 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 49 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("3\n");}
-#line 1298 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 56 "relational_algebra.y" /* yacc.c:1646  */
+    {printf("3\n"); (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1303 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 57 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1309 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 51 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("4\n");}
-#line 1304 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 58 "relational_algebra.y" /* yacc.c:1646  */
+    {printf("4\n");(yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1315 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 59 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1321 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 60 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(4,temp1,temp2);}
+#line 1327 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 61 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(4,temp1,temp2);}
+#line 1333 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 62 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(5,temp1,temp2);}
+#line 1339 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 63 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(5,temp1,temp2);}
+#line 1345 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 64 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2);}
+#line 1351 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 65 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(6,temp1,temp2);}
+#line 1357 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 66 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2);}
+#line 1363 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 20:
+#line 67 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2);}
+#line 1369 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 21:
+#line 68 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(7,temp1,temp2);}
+#line 1375 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 22:
+#line 69 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2);}
+#line 1381 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 70 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(8,temp1,temp2);}
+#line 1387 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 64 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("5\n");}
-#line 1310 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 71 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(8,temp1,temp2);}
+#line 1393 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
-  case 30:
-#line 70 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("6\n");(yyval.str) = (yyvsp[0].str);}
-#line 1316 "relational_algebra.tab.c" /* yacc.c:1646  */
+  case 25:
+#line 72 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(9,temp1,temp2);}
+#line 1399 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 26:
+#line 73 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(9,temp1,temp2);}
+#line 1405 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 74 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(3,(yyvsp[0].a),NULL);}
+#line 1411 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1320 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1415 "relational_algebra.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1544,7 +1639,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 78 "relational_algebra.y" /* yacc.c:1906  */
+#line 84 "relational_algebra.y" /* yacc.c:1906  */
 
 
 int main()
