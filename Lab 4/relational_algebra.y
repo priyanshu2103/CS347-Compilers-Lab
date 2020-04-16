@@ -6,7 +6,7 @@
 #include "tree.c"
 extern int yylex(void);
 extern void yyterminate();
-void yyerror(const char *s);
+
 enum id_val{attribute=1,table=2};
 //currently taking OPER as <=
 // not included float yet
