@@ -1,4 +1,4 @@
-Dept_ID,Dept_Name
+Dept_Id,Dept_Name
 1,CSE
 2,CHEM
 3,CE
@@ -11,3 +11,4 @@ Dept_ID,Dept_Name
 10,MET
 11,BIOTECH
 12,ENC
+3,bcd

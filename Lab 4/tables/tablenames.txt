@@ -1,1 +1,1 @@
-course.csv,department.csv
+course.csv,department.csv,prof_course.csv

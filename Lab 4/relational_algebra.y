@@ -361,8 +361,7 @@ mul_expr : ID DOT ID EQ ID DOT ID
                 yyerror("Table2 does not contain given attribute");
                 exit(0);
               }
-              char s[200]; strcpy(s,$1.id_name) ;strcat(s,"."); strcat(s,$3.id_name);
-              char t[200]; strcpy(t,$5.id_name) ;strcat(t,"."); strcat(t,$7.id_name);
+
               struct ast *temp1=new_var($3.id_name);
               struct ast *temp2=new_var($7.id_name);
               $$=new_ast(6,temp1,temp2);

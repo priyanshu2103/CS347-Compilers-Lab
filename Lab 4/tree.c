@@ -110,78 +110,78 @@ void select_func(struct ast *node,char * tablename , list *global_list)
     temp=temp->next;
   }
 
-    char table[200];
-    memset(table,0,sizeof(table));
-    sprintf(table,"tables/%s.csv",tablename);
-    FILE* fp = fopen(table, "r");
-    char s[1000];
-    char comma[]=",";
-    fgets(s,sizeof(s),fp);
-    sscanf(s,"%[^\n]comma",s);
-    char *htoken = strtok(s,comma);
-    while(htoken!=NULL)
+  char table[200];
+  memset(table,0,sizeof(table));
+  sprintf(table,"tables/%s.csv",tablename);
+  FILE* fp = fopen(table, "r");
+  char s[1000];
+  char comma[]=",";
+  fgets(s,sizeof(s),fp);
+  sscanf(s,"%[^\n]comma",s);
+  char *htoken = strtok(s,comma);
+  while(htoken!=NULL)
+  {
+      printf("%s",htoken);
+      htoken = strtok(NULL,comma);
+      if(htoken!=NULL)
+      {
+        printf(",");
+      }
+  }
+  printf("\n");
+  while(fgets(s,sizeof(s),fp))
+  {
+    char *aux[100];
+  	sscanf(s,"%[^\n]comma",s);
+  	char *token = strtok(s,comma);
+  	int j=0;
+    while(token!=NULL)
     {
-        printf("%s",htoken);
-        htoken = strtok(NULL,comma);
-        if(htoken!=NULL)
+      aux[j]=token;
+      // printf("jjjj %d\n",j);
+      // printf("ToKeN %s\n",token);
+      lNode * temp = global_list->head;
+    	while(temp !=NULL)
+    	{
+        // printf("JjJjJjJjJj %d\n",j);
+        struct var_or_const * v=temp->data;
+        if(v->v_or_c == 1)
         {
-          printf(",");
-        }
-    }
-    printf("\n");
-    while(fgets(s,sizeof(s),fp))
-    {
-      char *aux[100];
-    	sscanf(s,"%[^\n]comma",s);
-    	char *token = strtok(s,comma);
-    	int j=0;
-	    while(token!=NULL)
-	    {
-        aux[j]=token;
-        // printf("jjjj %d\n",j);
-        // printf("ToKeN %s\n",token);
-        lNode * temp = global_list->head;
-      	while(temp !=NULL)
-      	{
-          // printf("JjJjJjJjJj %d\n",j);
-          struct var_or_const * v=temp->data;
-          if(v->v_or_c == 1)
+          // printf("NaMe %s\n",v->name);
+          int index=v->idx;
+          if (index==-1)
           {
-            // printf("NaMe %s\n",v->name);
-            int index=v->idx;
-            if (index==-1)
-            {
-              yyerror("Attribute does not exist in given table");
-              exit(0);
-            }
-            if(j == index )
-  	        {
-              if (v->nodetype == 10) // int
-              {
-                v->num_val=atoi(token);
-              }
-              else              // string
-              {
-                v->str_val=token;
-              }
-  	        }
+            yyerror("Attribute does not exist in given table");
+            exit(0);
           }
-          temp=temp->next;
-         }
-        token = strtok(NULL,comma);
-  	    j++;
+          if(j == index )
+	        {
+            if (v->nodetype == 10) // int
+            {
+              v->num_val=atoi(token);
+            }
+            else              // string
+            {
+              v->str_val=token;
+            }
+	        }
+        }
+        temp=temp->next;
        }
-       int ans = eval(node);
-       if(ans==1)
+      token = strtok(NULL,comma);
+	    j++;
+     }
+     int ans = eval(node);
+     if(ans==1)
+     {
+       for(int i=0;i<j-1;i++)
        {
-         for(int i=0;i<j-1;i++)
-         {
-           printf("%s,",aux[i]);
-         }
-         printf("%s\n",aux[j-1]);
+         printf("%s,",aux[i]);
        }
-    }
-    fclose(fp);
+       printf("%s\n",aux[j-1]);
+     }
+  }
+  fclose(fp);
 }
 
 void project_func(int count,char **project_attrs,char *tablename)
@@ -323,9 +323,191 @@ void cartesian_product_func(char *tablename1,char *tablename2)
   }
   fclose(fp1);
 }
-void equi_join_func(struct ast *node,char *table1, char *table2,list *global_list)
+void equi_join_func(struct ast *node,char *tablename1, char *tablename2,list *global_list)
 {
+  lNode * temp = global_list->head;
+  while(temp)
+  {
+    struct var_or_const *v=temp->data;
+    if(v->v_or_c==1)
+    {
+      int datatype=retrieveDatatype(v->name,v->table_name);
+      if (datatype == 1)
+      {
+        v->nodetype=10;
+      }
+      else
+      {
+        v->nodetype=11;
+      }
+      int index=checkAttributeValidity(v->name,v->table_name);
+      v->idx=index;
+      printf("idxxxx %s %s %d\n",v->name,v->table_name,v->idx);
+    }
+    temp=temp->next;
+  }
 
+  printf("\n");
+  char table1[200];
+  char table2[200];
+  memset(table1,0,sizeof(tablename1));
+  memset(table2,0,sizeof(tablename2));
+  sprintf(table1,"tables/%s.csv",tablename1);
+  sprintf(table2,"tables/%s.csv",tablename2);
+  FILE* fp1 = fopen(table1, "r");
+  FILE* fp2 = fopen(table2, "r");
+  char s1[1000];
+  char s2[1000];
+
+  char comma[]=",";
+  // if(!fgets(s1,sizeof(s1),fp1))
+  // {
+  //   yyerror("Table 1 empty");
+  //   exit(0);
+  // }
+  fgets(s1,sizeof(s1),fp1);
+  sscanf(s1,"%[^\n]comma",s1);
+  char *token = strtok(s1,comma);
+  bool is_first=true;
+  while(token!=NULL)
+  {
+    if(is_first)
+    {
+      is_first=false;
+      printf("%s",token);
+    }
+    else
+    {
+      printf(",%s",token);
+    }
+    token = strtok(NULL,comma);
+  }
+  fgets(s2,sizeof(s2),fp2);
+  sscanf(s2,"%[^\n]comma",s2);
+  token = strtok(s2,comma);
+  while(token!=NULL)
+  {
+    printf(",%s",token);
+    token = strtok(NULL,comma);
+  }
+  printf("\n");
+  fclose(fp1);
+  fclose(fp2);
+//......................header printed.......................//
+
+  fp1 = fopen(table1, "r");
+  fgets(s1,sizeof(s1),fp1);
+  while(fgets(s1,sizeof(s1),fp1))
+  {
+    char *aux1[200];
+  	sscanf(s1,"%[^\n]comma",s1);
+  	char *token1 = strtok(s1,comma);
+  	int j1=0;
+    while(token1!=NULL)
+    {
+      aux1[j1]=token1;
+      // printf("jjjj %d\n",j);
+      // printf("ToKeN %s\n",token);
+      lNode * temp = global_list->head;
+    	while(temp !=NULL)
+    	{
+        // printf("JjJjJjJjJj %d\n",j);
+        struct var_or_const * v=temp->data;
+        if(strcmp(v->table_name,tablename1)==0)
+        {
+          if(v->v_or_c == 1)
+          {
+            // printf("NaMe %s\n",v->name);
+            int index=v->idx;
+            if (index==-1)
+            {
+              yyerror("Given attribute does not exist in table1");
+              exit(0);
+            }
+            if(j1 == index )
+            {
+              if (v->nodetype == 10) // int
+              {
+                v->num_val=atoi(token1);
+              }
+              else              // string
+              {
+                v->str_val=token1;
+              }
+            }
+          }
+        }
+        temp=temp->next;
+       }
+       token1 = strtok(NULL,comma);
+	     j1++;
+    }
+
+    fp2 = fopen(table2, "r");
+    fgets(s2,sizeof(s2),fp2);
+    while(fgets(s2,sizeof(s2),fp2))
+    {
+      char *aux2[200];
+    	sscanf(s2,"%[^\n]comma",s2);
+    	char *token2 = strtok(s2,comma);
+    	int j2=0;
+      while(token2!=NULL)
+      {
+        aux2[j2]=token2;
+        // printf("jjjj %d\n",j);
+        // printf("ToKeN2 %s\n",token2);
+        lNode * temp = global_list->head;
+      	while(temp !=NULL)
+      	{
+          // printf("JjJjJjJjJj %d\n",j);
+          struct var_or_const * v=temp->data;
+          if(strcmp(v->table_name,tablename2)==0)
+          {
+            if(v->v_or_c == 1)
+            {
+              // printf("NaMe %s\n",v->name);
+              int index=v->idx;
+              if (index==-1)
+              {
+                yyerror("Given attribute does not exist in table2");
+                exit(0);
+              }
+              if(j2 == index )
+              {
+                if (v->nodetype == 10) // int
+                {
+                  v->num_val=atoi(token2);
+                  // printf("numval %d numval", v->num_val);
+                }
+                else              // string
+                {
+                  v->str_val=token2;
+                }
+              }
+            }
+          }
+          temp=temp->next;
+         }
+         token2 = strtok(NULL,comma);
+  	     j2++;
+      }
+      int ans = eval(node);
+      if(ans==1)
+      {
+        for(int i=0;i<j1;i++)
+        {
+          printf("%s,",aux1[i]);
+        }
+        for(int i=0;i<j2-1;i++)
+        {
+          printf("%s,",aux2[i]);
+        }
+        printf("%s\n",aux2[j2-1]);
+      }
+    }
+    fclose(fp2);
+  }
+  fclose(fp1);
 }
 
 struct ast *new_ast(int nodetype, struct ast *l, struct ast *r)

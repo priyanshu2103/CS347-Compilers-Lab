@@ -1701,8 +1701,7 @@ yyreduce:
                 yyerror("Table2 does not contain given attribute");
                 exit(0);
               }
-              char s[200]; strcpy(s,(yyvsp[-6].id_attributes).id_name) ;strcat(s,"."); strcat(s,(yyvsp[-4].id_attributes).id_name);
-              char t[200]; strcpy(t,(yyvsp[-2].id_attributes).id_name) ;strcat(t,"."); strcat(t,(yyvsp[0].id_attributes).id_name);
+
               struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name);
               struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
               (yyval.a)=new_ast(6,temp1,temp2);
@@ -1714,11 +1713,11 @@ yyreduce:
               list_pushback(global_list,v1);
               list_pushback(global_list,v2);
            }
-#line 1718 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1717 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1722 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1721 "relational_algebra.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1946,7 +1945,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 378 "relational_algebra.y" /* yacc.c:1906  */
+#line 377 "relational_algebra.y" /* yacc.c:1906  */
 
 
 int main()
