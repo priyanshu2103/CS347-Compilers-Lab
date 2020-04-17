@@ -1350,7 +1350,7 @@ yyreduce:
            yyerror("Table2 does not exist");
            exit(0);
          }
-         printCartesianProduct((yyvsp[-5].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name);
+         cartesian_product_func((yyvsp[-5].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name);
        }
 #line 1356 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;

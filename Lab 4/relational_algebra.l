@@ -14,7 +14,7 @@ b   [ ]*
 
 {b}"SELECT"{b}|{b}"select"{b}                           {printf("%s ",yytext ); return SELECT;}
 {b}"PROJECT"{b}|{b}"project"{b}                         {printf("%s ",yytext ); return PROJECT;}
-{b}"CARTESIAN_PRODUCT"{b}|{b}"cartesian_project"{b}     {printf("%s ",yytext ); return CARTESIAN_PRODUCT;}
+{b}"CARTESIAN_PRODUCT"{b}|{b}"cartesian_product"{b}     {printf("%s ",yytext ); return CARTESIAN_PRODUCT;}
 {b}"EQUI_JOIN"{b}|{b}"equi_join"{b}                     {printf("%s ",yytext );	return EQUI_JOIN;}
 {b}"<="{b}                                              {printf("%s ",yytext ); return LE;}
 {b}">="{b}                                              {printf("%s ",yytext ); return GE;}

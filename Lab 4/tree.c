@@ -237,6 +237,92 @@ void project_func(int count,char **project_attrs,char *tablename)
   fclose(fp);
 }
 
+void cartesian_product_func(char *tablename1,char *tablename2)
+{
+  printf("\n");
+  char table1[200];
+  char table2[200];
+  memset(table1,0,sizeof(tablename1));
+  memset(table2,0,sizeof(tablename2));
+  sprintf(table1,"tables/%s.csv",tablename1);
+  sprintf(table2,"tables/%s.csv",tablename2);
+  FILE* fp1 = fopen(table1, "r");
+  FILE* fp2 = fopen(table2, "r");
+  char s1[1000];
+  char s2[1000];
+
+  char comma[]=",";
+  // if(!fgets(s1,sizeof(s1),fp1))
+  // {
+  //   yyerror("Table 1 empty");
+  //   exit(0);
+  // }
+  fgets(s1,sizeof(s1),fp1);
+  sscanf(s1,"%[^\n]comma",s1);
+  char *token = strtok(s1,comma);
+  bool is_first=true;
+  while(token!=NULL)
+  {
+    if(is_first)
+    {
+      is_first=false;
+      printf("%s",token);
+    }
+    else
+    {
+      printf(",%s",token);
+    }
+    token = strtok(NULL,comma);
+  }
+  fgets(s2,sizeof(s2),fp2);
+  sscanf(s2,"%[^\n]comma",s2);
+  token = strtok(s2,comma);
+  while(token!=NULL)
+  {
+    printf(",%s",token);
+    token = strtok(NULL,comma);
+  }
+  printf("\n");
+  fclose(fp2);
+  while(fgets(s1,sizeof(s1),fp1))
+  {
+    char aux[2000];
+    char temp[2000];
+    sscanf(s1,"%[^\n]comma",s1);
+    char *token1 = strtok(s1,comma);
+    bool is_first=true;
+    while(token1!=NULL)
+    {
+      if(is_first)
+      {
+        is_first=false;
+        sprintf(aux,"%s",token1);
+      }
+      else
+      {
+        sprintf(temp,",%s",token1);
+        strcat(aux,temp);
+      }
+      token1 = strtok(NULL,comma);
+    }
+    fp2 = fopen(table2, "r");
+    fgets(s2,sizeof(s2),fp2);
+    while(fgets(s2,sizeof(s2),fp2))
+    {
+      printf("%s",aux);
+      sscanf(s2,"%[^\n]comma",s2);
+      char *token2 = strtok(s2,comma);
+      while(token2!=NULL)
+      {
+        printf(",%s",token2);
+        token2 = strtok(NULL,comma);
+      }
+      printf("\n");
+    }
+    fclose(fp2);
+  }
+  fclose(fp1);
+}
 void equi_join_func(struct ast *node,char *table1, char *table2,list *global_list)
 {
 

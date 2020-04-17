@@ -97,7 +97,7 @@ stmt : SELECT {list *select_list = create_list();global_list=select_list;} LT co
            yyerror("Table2 does not exist");
            exit(0);
          }
-         printCartesianProduct($2.id_name,$6.id_name);
+         cartesian_product_func($2.id_name,$6.id_name);
        }|
 
        LP ID RP EQUI_JOIN {list *equi_join_list = create_list();global_list=equi_join_list;} LT mul_cond GT LP ID RP
