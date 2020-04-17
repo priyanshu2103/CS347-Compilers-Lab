@@ -18,6 +18,7 @@ struct var_or_const{
   char *name;
   int num_val;
   char * str_val;
+  char * table_name;
 };
 
 struct result{
@@ -26,6 +27,18 @@ struct result{
   char *str_val;
   int res;
 };
+
+typedef struct listnode{
+	struct var_or_const * data;
+	struct listnode * prev;
+	struct listnode * next;
+}lNode;
+
+typedef struct list{
+	struct listnode * head;
+	struct listnode * tail;
+}list;
+
 /* build an AST */
 struct ast *new_ast(int nodetype, struct ast *l, struct ast *r);
 struct ast *new_num(int num);
@@ -36,10 +49,18 @@ struct result *eval(struct ast *);
 /* delete and free an AST */
 void treefree(struct ast *);
 
-void select_func(struct ast *node,char * table);
+void select_func(struct ast *node,char * table, list *global_list)
+{
 
-
-void select_func(struct ast *node,char * table)
+}
+void project_func(int count,char **project_attrs,char *table)
+{
+  for(int i=0;i<count;i++)
+  {
+     printf("kkkkkkkkk %s\n",project_attrs[i]);
+  }
+}
+void equi_join_func(struct ast *node,char *table1, char *table2,list *global_list)
 {
 
 }
@@ -91,6 +112,7 @@ new_num(int d)
    yyerror("out of space");
    exit(0);
    }
+   a->nodetype=-1;
    a->name = n;
    a->v_or_c=1;
    return (struct ast *)a;
@@ -217,7 +239,7 @@ eval(struct ast *a)
    }
    struct var_or_const * t1 = (struct var_or_const *) (a->l);
    struct var_or_const * t2 = (struct var_or_const *) (a->r);
-   temp->res = (t1->num_val >= t2->num_val) ? 1 : 0;
+   temp->res = (t1->num_val > t2->num_val) ? 1 : 0;
    break;
 }
  case 10: {temp->is_num_or_str=1; temp->num_val = ((struct var_or_const *)a)->num_val;break;}

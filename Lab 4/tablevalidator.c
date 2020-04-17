@@ -22,7 +22,7 @@ bool tableValidity(char* tablename)
 		token=strtok(NULL,comma);
 	}
 	fclose(fp);
-	printf("Table does not exist\n");
+	printf("Table %s does not exist\n",tablename);
 	return false;
 }
 
@@ -31,7 +31,7 @@ bool checkAttributeValidity(char* attribute,char* tablename)
 {
 	if(!tableValidity(tablename))
 	{
-		printf("Table does not exist\n"); 
+		// printf("Table does not exist\n");
 		return false;
 	}
 	char table[100];
@@ -57,16 +57,16 @@ bool checkAttributeValidity(char* attribute,char* tablename)
 // jis function mein bhi daalna ho daal lena!
 void printCartesianProduct(char* tablename1,char* tablename2)
 {
-	if(!tableValidity(tablename1))
-	{
-		printf("Table %s does not exist\n",tablename1);
-		return;
-	}
-	if(!tableValidity(tablename2))
-	{
-		printf("Table %s does not exist\n",tablename2);
-		return;
-	}
+	// if(!tableValidity(tablename1))
+	// {
+	// 	printf("Table %s does not exist\n",tablename1);
+	// 	return;
+	// }
+	// if(!tableValidity(tablename2))
+	// {
+	// 	printf("Table %s does not exist\n",tablename2);
+	// 	return;
+	// }
 	char comma[]=",";
 	char table1[100],table2[100];
 	memset(table1,0,sizeof(table1));
@@ -121,13 +121,13 @@ void printCartesianProduct(char* tablename1,char* tablename2)
     fclose(fp1);
 }
 
-int main()
-{
-	char check[]="mishra";
-	if(tableValidity(check))
-		printf("Hullehullarehullehulle\n");
-	else
-		printf("Katgya\n");
-	// CSV FILE BANA KE CHECK KARLENA BAAKI DONON FUNC
-	// GOOD NIGHT
-}
+// int main()
+// {
+// 	char check[]="mishra";
+// 	if(tableValidity(check))
+// 		printf("Hullehullarehullehulle\n");
+// 	else
+// 		printf("Katgya\n");
+// 	// CSV FILE BANA KE CHECK KARLENA BAAKI DONON FUNC
+// 	// GOOD NIGHT
+// }

@@ -6,71 +6,80 @@ Grammar
     2      | stmt NEWLINE
     3      | stmt NEWLINE stmts
 
-    4 stmt: SELECT LT cond GT LP ID RP
-    5     | PROJECT LT attr_list GT LP ID RP
-    6     | LP ID RP CARTESIAN_PRODUCT LP ID RP
-    7     | LP ID RP EQUI_JOIN LT mul_cond GT LP ID RP
+    4 $@1: %empty
 
-    8 cond: or_expr
-    9     | or_expr AND cond
+    5 stmt: SELECT $@1 LT cond GT LP ID RP
 
-   10 or_expr: expr
-   11        | expr OR or_expr
+    6 $@2: %empty
 
-   12 expr: ID LE ID
-   13     | ID LE INT
-   14     | ID GE ID
-   15     | ID GE INT
-   16     | ID EQ ID
-   17     | ID EQ INT
-   18     | ID EQ QUOTE ID QUOTE
-   19     | ID NEQ ID
-   20     | ID NEQ INT
-   21     | ID NEQ QUOTE ID QUOTE
-   22     | ID LT ID
-   23     | ID LT INT
-   24     | ID GT ID
-   25     | ID GT INT
-   26     | NOT expr
+    7 stmt: PROJECT $@2 LT attr_list GT LP ID RP
+    8     | LP ID RP CARTESIAN_PRODUCT LP ID RP
 
-   27 attr_list: ID
-   28          | ID COMMA attr_list
+    9 $@3: %empty
 
-   29 mul_cond: mul_or_expr
-   30         | mul_or_expr AND mul_cond
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond GT LP ID RP
 
-   31 mul_or_expr: mul_expr
-   32            | mul_expr OR mul_or_expr
+   11 cond: and_expr
+   12     | and_expr OR cond
 
-   33 mul_expr: mul_attr EQ mul_attr
+   13 and_expr: expr
+   14         | expr AND and_expr
 
-   34 mul_attr: ID DOT ID
+   15 expr: ID LE ID
+   16     | ID LE INT
+   17     | ID GE ID
+   18     | ID GE INT
+   19     | ID EQ ID
+   20     | ID EQ INT
+   21     | ID EQ QUOTE ID QUOTE
+   22     | ID NEQ ID
+   23     | ID NEQ INT
+   24     | ID NEQ QUOTE ID QUOTE
+   25     | ID LT ID
+   26     | ID LT INT
+   27     | ID GT ID
+   28     | ID GT INT
+   29     | NOT expr
+
+   30 attr_list: ID
+
+   31 $@4: %empty
+
+   32 attr_list: ID $@4 COMMA attr_list
+
+   33 mul_cond: mul_and_expr
+   34         | mul_and_expr OR mul_cond
+
+   35 mul_and_expr: mul_expr
+   36             | mul_expr AND mul_and_expr
+
+   37 mul_expr: ID DOT ID EQ ID DOT ID
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-SELECT (258) 4
-PROJECT (259) 5
-CARTESIAN_PRODUCT (260) 6
-EQUI_JOIN (261) 7
-LE (262) 12 13
-GE (263) 14 15
-EQ (264) 16 17 18 33
-NEQ (265) 19 20 21
-LT (266) 4 5 7 22 23
-GT (267) 4 5 7 24 25
-AND (268) 9 30
-OR (269) 11 32
-NOT (270) 26
-COMMA (271) 28
-DOT (272) 34
-LP (273) 4 5 6 7
-RP (274) 4 5 6 7
-ID (275) 4 5 6 7 12 13 14 15 16 17 18 19 20 21 22 23 24 25 27 28 34
-INT (276) 13 15 17 20 23 25
-QUOTE (277) 18 21
+SELECT (258) 5
+PROJECT (259) 7
+CARTESIAN_PRODUCT (260) 8
+EQUI_JOIN (261) 10
+LE (262) 15 16
+GE (263) 17 18
+EQ (264) 19 20 21 37
+NEQ (265) 22 23 24
+LT (266) 5 7 10 25 26
+GT (267) 5 7 10 27 28
+AND (268) 14 36
+OR (269) 12 34
+NOT (270) 29
+COMMA (271) 32
+DOT (272) 37
+LP (273) 5 7 8 10
+RP (274) 5 7 8 10
+ID (275) 5 7 8 10 15 16 17 18 19 20 21 22 23 24 25 26 27 28 30 32 37
+INT (276) 16 18 20 23 26 28
+QUOTE (277) 21 24
 NEWLINE (278) 2 3
 
 
@@ -81,24 +90,30 @@ $accept (24)
 stmts (25)
     on left: 1 2 3, on right: 0 3
 stmt (26)
-    on left: 4 5 6 7, on right: 1 2 3
-cond (27)
-    on left: 8 9, on right: 4 9
-or_expr (28)
-    on left: 10 11, on right: 8 9 11
-expr (29)
-    on left: 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26, on right:
-    10 11 26
-attr_list (30)
-    on left: 27 28, on right: 5 28
-mul_cond (31)
-    on left: 29 30, on right: 7 30
-mul_or_expr (32)
-    on left: 31 32, on right: 29 30 32
-mul_expr (33)
-    on left: 33, on right: 31 32
-mul_attr (34)
-    on left: 34, on right: 33
+    on left: 5 7 8 10, on right: 1 2 3
+$@1 (27)
+    on left: 4, on right: 5
+$@2 (28)
+    on left: 6, on right: 7
+$@3 (29)
+    on left: 9, on right: 10
+cond (30)
+    on left: 11 12, on right: 5 12
+and_expr (31)
+    on left: 13 14, on right: 11 12 14
+expr (32)
+    on left: 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29, on right:
+    13 14 29
+attr_list (33)
+    on left: 30 32, on right: 7 32
+$@4 (34)
+    on left: 31, on right: 32
+mul_cond (35)
+    on left: 33 34, on right: 10 34
+mul_and_expr (36)
+    on left: 35 36, on right: 33 34 36
+mul_expr (37)
+    on left: 37, on right: 35 36
 
 
 State 0
@@ -115,22 +130,26 @@ State 0
 
 State 1
 
-    4 stmt: SELECT . LT cond GT LP ID RP
+    5 stmt: SELECT . $@1 LT cond GT LP ID RP
 
-    LT  shift, and go to state 6
+    $default  reduce using rule 4 ($@1)
+
+    $@1  go to state 6
 
 
 State 2
 
-    5 stmt: PROJECT . LT attr_list GT LP ID RP
+    7 stmt: PROJECT . $@2 LT attr_list GT LP ID RP
 
-    LT  shift, and go to state 7
+    $default  reduce using rule 6 ($@2)
+
+    $@2  go to state 7
 
 
 State 3
 
-    6 stmt: LP . ID RP CARTESIAN_PRODUCT LP ID RP
-    7     | LP . ID RP EQUI_JOIN LT mul_cond GT LP ID RP
+    8 stmt: LP . ID RP CARTESIAN_PRODUCT LP ID RP
+   10     | LP . ID RP EQUI_JOIN $@3 LT mul_cond GT LP ID RP
 
     ID  shift, and go to state 8
 
@@ -155,31 +174,24 @@ State 5
 
 State 6
 
-    4 stmt: SELECT LT . cond GT LP ID RP
+    5 stmt: SELECT $@1 . LT cond GT LP ID RP
 
-    NOT  shift, and go to state 11
-    ID   shift, and go to state 12
-
-    cond     go to state 13
-    or_expr  go to state 14
-    expr     go to state 15
+    LT  shift, and go to state 11
 
 
 State 7
 
-    5 stmt: PROJECT LT . attr_list GT LP ID RP
+    7 stmt: PROJECT $@2 . LT attr_list GT LP ID RP
 
-    ID  shift, and go to state 16
-
-    attr_list  go to state 17
+    LT  shift, and go to state 12
 
 
 State 8
 
-    6 stmt: LP ID . RP CARTESIAN_PRODUCT LP ID RP
-    7     | LP ID . RP EQUI_JOIN LT mul_cond GT LP ID RP
+    8 stmt: LP ID . RP CARTESIAN_PRODUCT LP ID RP
+   10     | LP ID . RP EQUI_JOIN $@3 LT mul_cond GT LP ID RP
 
-    RP  shift, and go to state 18
+    RP  shift, and go to state 13
 
 
 State 9
@@ -200,583 +212,623 @@ State 10
 
     $default  reduce using rule 2 (stmts)
 
-    stmts  go to state 19
+    stmts  go to state 14
     stmt   go to state 5
 
 
 State 11
 
-   26 expr: NOT . expr
+    5 stmt: SELECT $@1 LT . cond GT LP ID RP
 
-    NOT  shift, and go to state 11
-    ID   shift, and go to state 12
+    NOT  shift, and go to state 15
+    ID   shift, and go to state 16
 
-    expr  go to state 20
+    cond      go to state 17
+    and_expr  go to state 18
+    expr      go to state 19
 
 
 State 12
 
-   12 expr: ID . LE ID
-   13     | ID . LE INT
-   14     | ID . GE ID
-   15     | ID . GE INT
-   16     | ID . EQ ID
-   17     | ID . EQ INT
-   18     | ID . EQ QUOTE ID QUOTE
-   19     | ID . NEQ ID
-   20     | ID . NEQ INT
-   21     | ID . NEQ QUOTE ID QUOTE
-   22     | ID . LT ID
-   23     | ID . LT INT
-   24     | ID . GT ID
-   25     | ID . GT INT
+    7 stmt: PROJECT $@2 LT . attr_list GT LP ID RP
 
-    LE   shift, and go to state 21
-    GE   shift, and go to state 22
-    EQ   shift, and go to state 23
-    NEQ  shift, and go to state 24
-    LT   shift, and go to state 25
-    GT   shift, and go to state 26
+    ID  shift, and go to state 20
+
+    attr_list  go to state 21
 
 
 State 13
 
-    4 stmt: SELECT LT cond . GT LP ID RP
+    8 stmt: LP ID RP . CARTESIAN_PRODUCT LP ID RP
+   10     | LP ID RP . EQUI_JOIN $@3 LT mul_cond GT LP ID RP
 
-    GT  shift, and go to state 27
+    CARTESIAN_PRODUCT  shift, and go to state 22
+    EQUI_JOIN          shift, and go to state 23
 
 
 State 14
-
-    8 cond: or_expr .
-    9     | or_expr . AND cond
-
-    AND  shift, and go to state 28
-
-    $default  reduce using rule 8 (cond)
-
-
-State 15
-
-   10 or_expr: expr .
-   11        | expr . OR or_expr
-
-    OR  shift, and go to state 29
-
-    $default  reduce using rule 10 (or_expr)
-
-
-State 16
-
-   27 attr_list: ID .
-   28          | ID . COMMA attr_list
-
-    COMMA  shift, and go to state 30
-
-    $default  reduce using rule 27 (attr_list)
-
-
-State 17
-
-    5 stmt: PROJECT LT attr_list . GT LP ID RP
-
-    GT  shift, and go to state 31
-
-
-State 18
-
-    6 stmt: LP ID RP . CARTESIAN_PRODUCT LP ID RP
-    7     | LP ID RP . EQUI_JOIN LT mul_cond GT LP ID RP
-
-    CARTESIAN_PRODUCT  shift, and go to state 32
-    EQUI_JOIN          shift, and go to state 33
-
-
-State 19
 
     3 stmts: stmt NEWLINE stmts .
 
     $default  reduce using rule 3 (stmts)
 
 
+State 15
+
+   29 expr: NOT . expr
+
+    NOT  shift, and go to state 15
+    ID   shift, and go to state 16
+
+    expr  go to state 24
+
+
+State 16
+
+   15 expr: ID . LE ID
+   16     | ID . LE INT
+   17     | ID . GE ID
+   18     | ID . GE INT
+   19     | ID . EQ ID
+   20     | ID . EQ INT
+   21     | ID . EQ QUOTE ID QUOTE
+   22     | ID . NEQ ID
+   23     | ID . NEQ INT
+   24     | ID . NEQ QUOTE ID QUOTE
+   25     | ID . LT ID
+   26     | ID . LT INT
+   27     | ID . GT ID
+   28     | ID . GT INT
+
+    LE   shift, and go to state 25
+    GE   shift, and go to state 26
+    EQ   shift, and go to state 27
+    NEQ  shift, and go to state 28
+    LT   shift, and go to state 29
+    GT   shift, and go to state 30
+
+
+State 17
+
+    5 stmt: SELECT $@1 LT cond . GT LP ID RP
+
+    GT  shift, and go to state 31
+
+
+State 18
+
+   11 cond: and_expr .
+   12     | and_expr . OR cond
+
+    OR  shift, and go to state 32
+
+    $default  reduce using rule 11 (cond)
+
+
+State 19
+
+   13 and_expr: expr .
+   14         | expr . AND and_expr
+
+    AND  shift, and go to state 33
+
+    $default  reduce using rule 13 (and_expr)
+
+
 State 20
 
-   26 expr: NOT expr .
+   30 attr_list: ID .
+   32          | ID . $@4 COMMA attr_list
 
-    $default  reduce using rule 26 (expr)
+    COMMA     reduce using rule 31 ($@4)
+    $default  reduce using rule 30 (attr_list)
+
+    $@4  go to state 34
 
 
 State 21
 
-   12 expr: ID LE . ID
-   13     | ID LE . INT
+    7 stmt: PROJECT $@2 LT attr_list . GT LP ID RP
 
-    ID   shift, and go to state 34
-    INT  shift, and go to state 35
+    GT  shift, and go to state 35
 
 
 State 22
 
-   14 expr: ID GE . ID
-   15     | ID GE . INT
+    8 stmt: LP ID RP CARTESIAN_PRODUCT . LP ID RP
 
-    ID   shift, and go to state 36
-    INT  shift, and go to state 37
+    LP  shift, and go to state 36
 
 
 State 23
 
-   16 expr: ID EQ . ID
-   17     | ID EQ . INT
-   18     | ID EQ . QUOTE ID QUOTE
+   10 stmt: LP ID RP EQUI_JOIN . $@3 LT mul_cond GT LP ID RP
 
-    ID     shift, and go to state 38
-    INT    shift, and go to state 39
-    QUOTE  shift, and go to state 40
+    $default  reduce using rule 9 ($@3)
+
+    $@3  go to state 37
 
 
 State 24
 
-   19 expr: ID NEQ . ID
-   20     | ID NEQ . INT
-   21     | ID NEQ . QUOTE ID QUOTE
+   29 expr: NOT expr .
 
-    ID     shift, and go to state 41
-    INT    shift, and go to state 42
-    QUOTE  shift, and go to state 43
+    $default  reduce using rule 29 (expr)
 
 
 State 25
 
-   22 expr: ID LT . ID
-   23     | ID LT . INT
+   15 expr: ID LE . ID
+   16     | ID LE . INT
 
-    ID   shift, and go to state 44
-    INT  shift, and go to state 45
+    ID   shift, and go to state 38
+    INT  shift, and go to state 39
 
 
 State 26
 
-   24 expr: ID GT . ID
-   25     | ID GT . INT
+   17 expr: ID GE . ID
+   18     | ID GE . INT
 
-    ID   shift, and go to state 46
-    INT  shift, and go to state 47
+    ID   shift, and go to state 40
+    INT  shift, and go to state 41
 
 
 State 27
 
-    4 stmt: SELECT LT cond GT . LP ID RP
+   19 expr: ID EQ . ID
+   20     | ID EQ . INT
+   21     | ID EQ . QUOTE ID QUOTE
 
-    LP  shift, and go to state 48
+    ID     shift, and go to state 42
+    INT    shift, and go to state 43
+    QUOTE  shift, and go to state 44
 
 
 State 28
 
-    9 cond: or_expr AND . cond
+   22 expr: ID NEQ . ID
+   23     | ID NEQ . INT
+   24     | ID NEQ . QUOTE ID QUOTE
 
-    NOT  shift, and go to state 11
-    ID   shift, and go to state 12
-
-    cond     go to state 49
-    or_expr  go to state 14
-    expr     go to state 15
+    ID     shift, and go to state 45
+    INT    shift, and go to state 46
+    QUOTE  shift, and go to state 47
 
 
 State 29
 
-   11 or_expr: expr OR . or_expr
+   25 expr: ID LT . ID
+   26     | ID LT . INT
 
-    NOT  shift, and go to state 11
-    ID   shift, and go to state 12
-
-    or_expr  go to state 50
-    expr     go to state 15
+    ID   shift, and go to state 48
+    INT  shift, and go to state 49
 
 
 State 30
 
-   28 attr_list: ID COMMA . attr_list
+   27 expr: ID GT . ID
+   28     | ID GT . INT
 
-    ID  shift, and go to state 16
-
-    attr_list  go to state 51
+    ID   shift, and go to state 50
+    INT  shift, and go to state 51
 
 
 State 31
 
-    5 stmt: PROJECT LT attr_list GT . LP ID RP
+    5 stmt: SELECT $@1 LT cond GT . LP ID RP
 
     LP  shift, and go to state 52
 
 
 State 32
 
-    6 stmt: LP ID RP CARTESIAN_PRODUCT . LP ID RP
+   12 cond: and_expr OR . cond
 
-    LP  shift, and go to state 53
+    NOT  shift, and go to state 15
+    ID   shift, and go to state 16
+
+    cond      go to state 53
+    and_expr  go to state 18
+    expr      go to state 19
 
 
 State 33
 
-    7 stmt: LP ID RP EQUI_JOIN . LT mul_cond GT LP ID RP
+   14 and_expr: expr AND . and_expr
 
-    LT  shift, and go to state 54
+    NOT  shift, and go to state 15
+    ID   shift, and go to state 16
+
+    and_expr  go to state 54
+    expr      go to state 19
 
 
 State 34
 
-   12 expr: ID LE ID .
+   32 attr_list: ID $@4 . COMMA attr_list
 
-    $default  reduce using rule 12 (expr)
+    COMMA  shift, and go to state 55
 
 
 State 35
 
-   13 expr: ID LE INT .
+    7 stmt: PROJECT $@2 LT attr_list GT . LP ID RP
 
-    $default  reduce using rule 13 (expr)
+    LP  shift, and go to state 56
 
 
 State 36
 
-   14 expr: ID GE ID .
-
-    $default  reduce using rule 14 (expr)
-
-
-State 37
-
-   15 expr: ID GE INT .
-
-    $default  reduce using rule 15 (expr)
-
-
-State 38
-
-   16 expr: ID EQ ID .
-
-    $default  reduce using rule 16 (expr)
-
-
-State 39
-
-   17 expr: ID EQ INT .
-
-    $default  reduce using rule 17 (expr)
-
-
-State 40
-
-   18 expr: ID EQ QUOTE . ID QUOTE
-
-    ID  shift, and go to state 55
-
-
-State 41
-
-   19 expr: ID NEQ ID .
-
-    $default  reduce using rule 19 (expr)
-
-
-State 42
-
-   20 expr: ID NEQ INT .
-
-    $default  reduce using rule 20 (expr)
-
-
-State 43
-
-   21 expr: ID NEQ QUOTE . ID QUOTE
-
-    ID  shift, and go to state 56
-
-
-State 44
-
-   22 expr: ID LT ID .
-
-    $default  reduce using rule 22 (expr)
-
-
-State 45
-
-   23 expr: ID LT INT .
-
-    $default  reduce using rule 23 (expr)
-
-
-State 46
-
-   24 expr: ID GT ID .
-
-    $default  reduce using rule 24 (expr)
-
-
-State 47
-
-   25 expr: ID GT INT .
-
-    $default  reduce using rule 25 (expr)
-
-
-State 48
-
-    4 stmt: SELECT LT cond GT LP . ID RP
+    8 stmt: LP ID RP CARTESIAN_PRODUCT LP . ID RP
 
     ID  shift, and go to state 57
 
 
-State 49
+State 37
 
-    9 cond: or_expr AND cond .
+   10 stmt: LP ID RP EQUI_JOIN $@3 . LT mul_cond GT LP ID RP
 
-    $default  reduce using rule 9 (cond)
+    LT  shift, and go to state 58
 
 
-State 50
+State 38
 
-   11 or_expr: expr OR or_expr .
+   15 expr: ID LE ID .
 
-    $default  reduce using rule 11 (or_expr)
+    $default  reduce using rule 15 (expr)
 
 
-State 51
+State 39
 
-   28 attr_list: ID COMMA attr_list .
+   16 expr: ID LE INT .
 
-    $default  reduce using rule 28 (attr_list)
+    $default  reduce using rule 16 (expr)
 
 
-State 52
+State 40
 
-    5 stmt: PROJECT LT attr_list GT LP . ID RP
+   17 expr: ID GE ID .
 
-    ID  shift, and go to state 58
+    $default  reduce using rule 17 (expr)
 
 
-State 53
+State 41
 
-    6 stmt: LP ID RP CARTESIAN_PRODUCT LP . ID RP
-
-    ID  shift, and go to state 59
-
-
-State 54
-
-    7 stmt: LP ID RP EQUI_JOIN LT . mul_cond GT LP ID RP
-
-    ID  shift, and go to state 60
-
-    mul_cond     go to state 61
-    mul_or_expr  go to state 62
-    mul_expr     go to state 63
-    mul_attr     go to state 64
-
-
-State 55
-
-   18 expr: ID EQ QUOTE ID . QUOTE
-
-    QUOTE  shift, and go to state 65
-
-
-State 56
-
-   21 expr: ID NEQ QUOTE ID . QUOTE
-
-    QUOTE  shift, and go to state 66
-
-
-State 57
-
-    4 stmt: SELECT LT cond GT LP ID . RP
-
-    RP  shift, and go to state 67
-
-
-State 58
-
-    5 stmt: PROJECT LT attr_list GT LP ID . RP
-
-    RP  shift, and go to state 68
-
-
-State 59
-
-    6 stmt: LP ID RP CARTESIAN_PRODUCT LP ID . RP
-
-    RP  shift, and go to state 69
-
-
-State 60
-
-   34 mul_attr: ID . DOT ID
-
-    DOT  shift, and go to state 70
-
-
-State 61
-
-    7 stmt: LP ID RP EQUI_JOIN LT mul_cond . GT LP ID RP
-
-    GT  shift, and go to state 71
-
-
-State 62
-
-   29 mul_cond: mul_or_expr .
-   30         | mul_or_expr . AND mul_cond
-
-    AND  shift, and go to state 72
-
-    $default  reduce using rule 29 (mul_cond)
-
-
-State 63
-
-   31 mul_or_expr: mul_expr .
-   32            | mul_expr . OR mul_or_expr
-
-    OR  shift, and go to state 73
-
-    $default  reduce using rule 31 (mul_or_expr)
-
-
-State 64
-
-   33 mul_expr: mul_attr . EQ mul_attr
-
-    EQ  shift, and go to state 74
-
-
-State 65
-
-   18 expr: ID EQ QUOTE ID QUOTE .
+   18 expr: ID GE INT .
 
     $default  reduce using rule 18 (expr)
 
 
+State 42
+
+   19 expr: ID EQ ID .
+
+    $default  reduce using rule 19 (expr)
+
+
+State 43
+
+   20 expr: ID EQ INT .
+
+    $default  reduce using rule 20 (expr)
+
+
+State 44
+
+   21 expr: ID EQ QUOTE . ID QUOTE
+
+    ID  shift, and go to state 59
+
+
+State 45
+
+   22 expr: ID NEQ ID .
+
+    $default  reduce using rule 22 (expr)
+
+
+State 46
+
+   23 expr: ID NEQ INT .
+
+    $default  reduce using rule 23 (expr)
+
+
+State 47
+
+   24 expr: ID NEQ QUOTE . ID QUOTE
+
+    ID  shift, and go to state 60
+
+
+State 48
+
+   25 expr: ID LT ID .
+
+    $default  reduce using rule 25 (expr)
+
+
+State 49
+
+   26 expr: ID LT INT .
+
+    $default  reduce using rule 26 (expr)
+
+
+State 50
+
+   27 expr: ID GT ID .
+
+    $default  reduce using rule 27 (expr)
+
+
+State 51
+
+   28 expr: ID GT INT .
+
+    $default  reduce using rule 28 (expr)
+
+
+State 52
+
+    5 stmt: SELECT $@1 LT cond GT LP . ID RP
+
+    ID  shift, and go to state 61
+
+
+State 53
+
+   12 cond: and_expr OR cond .
+
+    $default  reduce using rule 12 (cond)
+
+
+State 54
+
+   14 and_expr: expr AND and_expr .
+
+    $default  reduce using rule 14 (and_expr)
+
+
+State 55
+
+   32 attr_list: ID $@4 COMMA . attr_list
+
+    ID  shift, and go to state 20
+
+    attr_list  go to state 62
+
+
+State 56
+
+    7 stmt: PROJECT $@2 LT attr_list GT LP . ID RP
+
+    ID  shift, and go to state 63
+
+
+State 57
+
+    8 stmt: LP ID RP CARTESIAN_PRODUCT LP ID . RP
+
+    RP  shift, and go to state 64
+
+
+State 58
+
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT . mul_cond GT LP ID RP
+
+    ID  shift, and go to state 65
+
+    mul_cond      go to state 66
+    mul_and_expr  go to state 67
+    mul_expr      go to state 68
+
+
+State 59
+
+   21 expr: ID EQ QUOTE ID . QUOTE
+
+    QUOTE  shift, and go to state 69
+
+
+State 60
+
+   24 expr: ID NEQ QUOTE ID . QUOTE
+
+    QUOTE  shift, and go to state 70
+
+
+State 61
+
+    5 stmt: SELECT $@1 LT cond GT LP ID . RP
+
+    RP  shift, and go to state 71
+
+
+State 62
+
+   32 attr_list: ID $@4 COMMA attr_list .
+
+    $default  reduce using rule 32 (attr_list)
+
+
+State 63
+
+    7 stmt: PROJECT $@2 LT attr_list GT LP ID . RP
+
+    RP  shift, and go to state 72
+
+
+State 64
+
+    8 stmt: LP ID RP CARTESIAN_PRODUCT LP ID RP .
+
+    $default  reduce using rule 8 (stmt)
+
+
+State 65
+
+   37 mul_expr: ID . DOT ID EQ ID DOT ID
+
+    DOT  shift, and go to state 73
+
+
 State 66
 
-   21 expr: ID NEQ QUOTE ID QUOTE .
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond . GT LP ID RP
 
-    $default  reduce using rule 21 (expr)
+    GT  shift, and go to state 74
 
 
 State 67
 
-    4 stmt: SELECT LT cond GT LP ID RP .
+   33 mul_cond: mul_and_expr .
+   34         | mul_and_expr . OR mul_cond
 
-    $default  reduce using rule 4 (stmt)
+    OR  shift, and go to state 75
+
+    $default  reduce using rule 33 (mul_cond)
 
 
 State 68
 
-    5 stmt: PROJECT LT attr_list GT LP ID RP .
+   35 mul_and_expr: mul_expr .
+   36             | mul_expr . AND mul_and_expr
 
-    $default  reduce using rule 5 (stmt)
+    AND  shift, and go to state 76
+
+    $default  reduce using rule 35 (mul_and_expr)
 
 
 State 69
 
-    6 stmt: LP ID RP CARTESIAN_PRODUCT LP ID RP .
+   21 expr: ID EQ QUOTE ID QUOTE .
 
-    $default  reduce using rule 6 (stmt)
+    $default  reduce using rule 21 (expr)
 
 
 State 70
 
-   34 mul_attr: ID DOT . ID
+   24 expr: ID NEQ QUOTE ID QUOTE .
 
-    ID  shift, and go to state 75
+    $default  reduce using rule 24 (expr)
 
 
 State 71
 
-    7 stmt: LP ID RP EQUI_JOIN LT mul_cond GT . LP ID RP
+    5 stmt: SELECT $@1 LT cond GT LP ID RP .
 
-    LP  shift, and go to state 76
+    $default  reduce using rule 5 (stmt)
 
 
 State 72
 
-   30 mul_cond: mul_or_expr AND . mul_cond
+    7 stmt: PROJECT $@2 LT attr_list GT LP ID RP .
 
-    ID  shift, and go to state 60
-
-    mul_cond     go to state 77
-    mul_or_expr  go to state 62
-    mul_expr     go to state 63
-    mul_attr     go to state 64
+    $default  reduce using rule 7 (stmt)
 
 
 State 73
 
-   32 mul_or_expr: mul_expr OR . mul_or_expr
+   37 mul_expr: ID DOT . ID EQ ID DOT ID
 
-    ID  shift, and go to state 60
-
-    mul_or_expr  go to state 78
-    mul_expr     go to state 63
-    mul_attr     go to state 64
+    ID  shift, and go to state 77
 
 
 State 74
 
-   33 mul_expr: mul_attr EQ . mul_attr
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond GT . LP ID RP
 
-    ID  shift, and go to state 60
-
-    mul_attr  go to state 79
+    LP  shift, and go to state 78
 
 
 State 75
 
-   34 mul_attr: ID DOT ID .
+   34 mul_cond: mul_and_expr OR . mul_cond
 
-    $default  reduce using rule 34 (mul_attr)
+    ID  shift, and go to state 65
+
+    mul_cond      go to state 79
+    mul_and_expr  go to state 67
+    mul_expr      go to state 68
 
 
 State 76
 
-    7 stmt: LP ID RP EQUI_JOIN LT mul_cond GT LP . ID RP
+   36 mul_and_expr: mul_expr AND . mul_and_expr
 
-    ID  shift, and go to state 80
+    ID  shift, and go to state 65
+
+    mul_and_expr  go to state 80
+    mul_expr      go to state 68
 
 
 State 77
 
-   30 mul_cond: mul_or_expr AND mul_cond .
+   37 mul_expr: ID DOT ID . EQ ID DOT ID
 
-    $default  reduce using rule 30 (mul_cond)
+    EQ  shift, and go to state 81
 
 
 State 78
 
-   32 mul_or_expr: mul_expr OR mul_or_expr .
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond GT LP . ID RP
 
-    $default  reduce using rule 32 (mul_or_expr)
+    ID  shift, and go to state 82
 
 
 State 79
 
-   33 mul_expr: mul_attr EQ mul_attr .
+   34 mul_cond: mul_and_expr OR mul_cond .
 
-    $default  reduce using rule 33 (mul_expr)
+    $default  reduce using rule 34 (mul_cond)
 
 
 State 80
 
-    7 stmt: LP ID RP EQUI_JOIN LT mul_cond GT LP ID . RP
+   36 mul_and_expr: mul_expr AND mul_and_expr .
 
-    RP  shift, and go to state 81
+    $default  reduce using rule 36 (mul_and_expr)
 
 
 State 81
 
-    7 stmt: LP ID RP EQUI_JOIN LT mul_cond GT LP ID RP .
+   37 mul_expr: ID DOT ID EQ . ID DOT ID
 
-    $default  reduce using rule 7 (stmt)
+    ID  shift, and go to state 83
+
+
+State 82
+
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond GT LP ID . RP
+
+    RP  shift, and go to state 84
+
+
+State 83
+
+   37 mul_expr: ID DOT ID EQ ID . DOT ID
+
+    DOT  shift, and go to state 85
+
+
+State 84
+
+   10 stmt: LP ID RP EQUI_JOIN $@3 LT mul_cond GT LP ID RP .
+
+    $default  reduce using rule 10 (stmt)
+
+
+State 85
+
+   37 mul_expr: ID DOT ID EQ ID DOT . ID
+
+    ID  shift, and go to state 86
+
+
+State 86
+
+   37 mul_expr: ID DOT ID EQ ID DOT ID .
+
+    $default  reduce using rule 37 (mul_expr)

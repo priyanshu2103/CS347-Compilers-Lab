@@ -68,21 +68,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "relational_algebra.tab.h"
-#include "tree.c"
+#include "tablevalidator.c"
+#include "list.c"
 extern int yylex(void);
 extern void yyterminate();
-
+list *global_list;
+char *project_attrs[100];
+int proj_attr_count=0;
 enum id_val{attribute=1,table=2};
 //currently taking OPER as <=
 // not included float yet
 // use snprintf while printing so that we can print together at last or after each statement and not print if syntax error
+// use printf in place of yyerror if want to print some variable names using %s
 // need to see if rhs is int in <=,>=,<,> cases
 // 0 as it is
 // 1 and
 // 2 or
 // 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
 
-#line 86 "relational_algebra.tab.c" /* yacc.c:339  */
+#line 90 "relational_algebra.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -146,10 +150,10 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 21 "relational_algebra.y" /* yacc.c:355  */
+#line 25 "relational_algebra.y" /* yacc.c:355  */
 struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;
 
-#line 153 "relational_algebra.tab.c" /* yacc.c:355  */
+#line 157 "relational_algebra.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -166,7 +170,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 170 "relational_algebra.tab.c" /* yacc.c:358  */
+#line 174 "relational_algebra.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -408,16 +412,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  9
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   73
+#define YYLAST   104
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  24
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  14
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  35
+#define YYNRULES  38
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  82
+#define YYNSTATES  87
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -465,10 +469,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    51,    51,    51,    51,    52,    53,    54,    55,    56,
-      57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
-      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
-      77,    78,    79,    80,    81,    82
+       0,    58,    58,    58,    58,    59,    59,    65,    65,    71,
+      75,    75,    89,    90,    91,    92,    93,    94,    95,    96,
+      97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
+     107,   108,   109,   109,   110,   111,   112,   113,   114
 };
 #endif
 
@@ -480,8 +484,8 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "SELECT", "PROJECT", "CARTESIAN_PRODUCT",
   "EQUI_JOIN", "LE", "GE", "EQ", "NEQ", "LT", "GT", "AND", "OR", "NOT",
   "COMMA", "DOT", "LP", "RP", "ID", "INT", "QUOTE", "NEWLINE", "$accept",
-  "stmts", "stmt", "cond", "or_expr", "expr", "attr_list", "mul_cond",
-  "mul_or_expr", "mul_expr", "mul_attr", YY_NULLPTR
+  "stmts", "stmt", "$@1", "$@2", "$@3", "cond", "and_expr", "expr",
+  "attr_list", "$@4", "mul_cond", "mul_and_expr", "mul_expr", YY_NULLPTR
 };
 #endif
 
@@ -496,12 +500,12 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -29
+#define YYPACT_NINF -30
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-29)))
+  (!!((Yystate) == (-30)))
 
-#define YYTABLE_NINF -1
+#define YYTABLE_NINF -33
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -510,15 +514,15 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -3,    18,    19,    -8,    31,    -9,    -7,    12,    15,   -29,
-      -3,    -7,    -5,    21,    22,    23,    20,    26,    14,   -29,
-     -29,     1,     3,   -11,    -4,     5,     7,    24,    -7,    -7,
-      12,    25,    27,    28,   -29,   -29,   -29,   -29,   -29,   -29,
-      29,   -29,   -29,    30,   -29,   -29,   -29,   -29,    32,   -29,
-     -29,   -29,    33,    34,    35,    36,    37,    38,    41,    42,
-      39,    50,    51,    49,    56,   -29,   -29,   -29,   -29,   -29,
-      46,    52,    35,    35,    35,   -29,    47,   -29,   -29,   -29,
-      53,   -29
+      -3,   -30,   -30,    -8,    29,    -9,    19,    20,    13,   -30,
+      -3,    -7,    15,    14,   -30,    -7,    -5,    21,    22,    24,
+      18,    26,    23,   -30,   -30,     1,     3,   -11,    -4,     5,
+       7,    25,    -7,    -7,    28,    27,    30,    31,   -30,   -30,
+     -30,   -30,   -30,   -30,    32,   -30,   -30,    33,   -30,   -30,
+     -30,   -30,    34,   -30,   -30,    15,    35,    37,    38,    17,
+      39,    40,   -30,    41,   -30,    45,    36,    43,    50,   -30,
+     -30,   -30,   -30,    44,    47,    38,    38,    42,    46,   -30,
+     -30,    48,    51,    52,   -30,    53,   -30
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -526,89 +530,95 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     2,     0,     0,     0,     1,
-       3,     0,     0,     0,     9,    11,    28,     0,     0,     4,
-      27,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    13,    14,    15,    16,    17,    18,
-       0,    20,    21,     0,    23,    24,    25,    26,     0,    10,
-      12,    29,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,    30,    32,     0,    19,    22,     5,     6,     7,
-       0,     0,     0,     0,     0,    35,     0,    31,    33,    34,
-       0,     8
+       0,     5,     7,     0,     0,     2,     0,     0,     0,     1,
+       3,     0,     0,     0,     4,     0,     0,     0,    12,    14,
+      31,     0,     0,    10,    30,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    16,    17,
+      18,    19,    20,    21,     0,    23,    24,     0,    26,    27,
+      28,    29,     0,    13,    15,     0,     0,     0,     0,     0,
+       0,     0,    33,     0,     9,     0,     0,    34,    36,    22,
+      25,     6,     8,     0,     0,     0,     0,     0,     0,    35,
+      37,     0,     0,     0,    11,     0,    38
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -29,    58,   -29,    13,    11,    40,    16,   -28,   -26,   -29,
-      -1
+     -30,    57,   -30,   -30,   -30,   -30,     8,    16,    56,    49,
+     -30,   -29,    -2,   -30
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4,     5,    13,    14,    15,    17,    61,    62,    63,
-      64
+      -1,     4,     5,     6,     7,    37,    17,    18,    19,    21,
+      34,    66,    67,    68
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_uint8 yytable[] =
+static const yytype_int8 yytable[] =
 {
-       1,     2,    21,    22,    23,    24,    25,    26,    11,    38,
-      39,    40,     8,    12,    10,     3,    41,    42,    43,    32,
-      33,    34,    35,    36,    37,    44,    45,    46,    47,     6,
-       7,     9,    16,    27,    18,    28,    30,    29,    31,    54,
-      50,    49,    48,    52,    77,    53,    51,    78,     0,    55,
-      56,    20,    57,    58,    59,    60,    70,    67,    65,    66,
-      68,    69,    71,    73,    72,    74,    75,    80,    19,     0,
-      76,     0,    81,    79
+       1,     2,    25,    26,    27,    28,    29,    30,    15,    42,
+      43,    44,     8,    16,    10,     3,    45,    46,    47,    22,
+      23,    38,    39,    40,    41,    48,    49,    50,    51,     9,
+      11,    12,    13,    31,   -32,    20,    32,    33,    35,    69,
+      53,    36,    58,    52,    55,    56,    79,     0,    74,    54,
+      57,    81,    59,    60,    61,    63,    64,    75,    65,    71,
+      72,    70,    73,    76,    77,    78,    82,    14,    83,    85,
+      84,    24,     0,    86,    80,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    62
 };
 
 static const yytype_int8 yycheck[] =
 {
        3,     4,     7,     8,     9,    10,    11,    12,    15,    20,
       21,    22,    20,    20,    23,    18,    20,    21,    22,     5,
-       6,    20,    21,    20,    21,    20,    21,    20,    21,    11,
-      11,     0,    20,    12,    19,    13,    16,    14,    12,    11,
-      29,    28,    18,    18,    72,    18,    30,    73,    -1,    20,
-      20,    11,    20,    20,    20,    20,    17,    19,    22,    22,
-      19,    19,    12,    14,    13,     9,    20,    20,    10,    -1,
-      18,    -1,    19,    74
+       6,    20,    21,    20,    21,    20,    21,    20,    21,     0,
+      11,    11,    19,    12,    16,    20,    14,    13,    12,    22,
+      32,    18,    11,    18,    16,    18,    75,    -1,    12,    33,
+      20,     9,    20,    20,    20,    20,    19,    14,    20,    19,
+      19,    22,    17,    13,    20,    18,    20,    10,    20,    17,
+      19,    15,    -1,    20,    76,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    55
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,    18,    25,    26,    11,    11,    20,     0,
-      23,    15,    20,    27,    28,    29,    20,    30,    19,    25,
-      29,     7,     8,     9,    10,    11,    12,    12,    13,    14,
-      16,    12,     5,     6,    20,    21,    20,    21,    20,    21,
-      22,    20,    21,    22,    20,    21,    20,    21,    18,    27,
-      28,    30,    18,    18,    11,    20,    20,    20,    20,    20,
-      20,    31,    32,    33,    34,    22,    22,    19,    19,    19,
-      17,    12,    13,    14,     9,    20,    18,    31,    32,    34,
-      20,    19
+       0,     3,     4,    18,    25,    26,    27,    28,    20,     0,
+      23,    11,    11,    19,    25,    15,    20,    30,    31,    32,
+      20,    33,     5,     6,    32,     7,     8,     9,    10,    11,
+      12,    12,    14,    13,    34,    12,    18,    29,    20,    21,
+      20,    21,    20,    21,    22,    20,    21,    22,    20,    21,
+      20,    21,    18,    30,    31,    16,    18,    20,    11,    20,
+      20,    20,    33,    20,    19,    20,    35,    36,    37,    22,
+      22,    19,    19,    17,    12,    14,    13,    20,    18,    35,
+      36,     9,    20,    20,    19,    17,    20
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    24,    25,    25,    25,    26,    26,    26,    26,    27,
-      27,    28,    28,    29,    29,    29,    29,    29,    29,    29,
-      29,    29,    29,    29,    29,    29,    29,    29,    30,    30,
-      31,    31,    32,    32,    33,    34
+       0,    24,    25,    25,    25,    27,    26,    28,    26,    26,
+      29,    26,    30,    30,    31,    31,    32,    32,    32,    32,
+      32,    32,    32,    32,    32,    32,    32,    32,    32,    32,
+      32,    33,    34,    33,    35,    35,    36,    36,    37
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     3,     7,     7,     7,    10,     1,
-       3,     1,     3,     3,     3,     3,     3,     3,     3,     5,
-       3,     3,     5,     3,     3,     3,     3,     2,     1,     3,
-       1,     3,     1,     3,     3,     3
+       0,     2,     1,     2,     3,     0,     8,     0,     8,     7,
+       0,    11,     1,     3,     1,     3,     3,     3,     3,     3,
+       3,     3,     5,     3,     3,     5,     3,     3,     3,     3,
+       2,     1,     0,     4,     1,     3,     1,     3,     7
 };
 
 
@@ -1285,133 +1295,267 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 51 "relational_algebra.y" /* yacc.c:1646  */
+#line 58 "relational_algebra.y" /* yacc.c:1646  */
     {printf("1\n");}
-#line 1291 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1301 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 52 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("2\n"); select_func((yyvsp[-4].a),(yyvsp[-1].id_attributes).id_name);}
-#line 1297 "relational_algebra.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 9:
-#line 56 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("3\n"); (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
-#line 1303 "relational_algebra.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 10:
-#line 57 "relational_algebra.y" /* yacc.c:1646  */
-    {(yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));}
-#line 1309 "relational_algebra.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 11:
-#line 58 "relational_algebra.y" /* yacc.c:1646  */
-    {printf("4\n");(yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
-#line 1315 "relational_algebra.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 12:
 #line 59 "relational_algebra.y" /* yacc.c:1646  */
-    {(yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));}
-#line 1321 "relational_algebra.tab.c" /* yacc.c:1646  */
+    {list *select_list = create_list();global_list=select_list;}
+#line 1307 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
-  case 13:
+  case 6:
 #line 60 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(4,temp1,temp2);}
-#line 1327 "relational_algebra.tab.c" /* yacc.c:1646  */
+    {
+          printf("2\n");
+          printList(global_list);
+          select_func((yyvsp[-4].a),(yyvsp[-1].id_attributes).id_name,global_list);
+       }
+#line 1317 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
-  case 14:
-#line 61 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(4,temp1,temp2);}
+  case 7:
+#line 65 "relational_algebra.y" /* yacc.c:1646  */
+    {proj_attr_count=0;}
+#line 1323 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 8:
+#line 66 "relational_algebra.y" /* yacc.c:1646  */
+    {
+
+
+         project_func(proj_attr_count,project_attrs,(yyvsp[-1].id_attributes).id_name);
+       }
 #line 1333 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
+  case 9:
+#line 71 "relational_algebra.y" /* yacc.c:1646  */
+    {
+                                             
+                                             printCartesianProduct((yyvsp[-5].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name);
+                                           }
+#line 1342 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 75 "relational_algebra.y" /* yacc.c:1646  */
+    {list *equi_join_list = create_list();global_list=equi_join_list;}
+#line 1348 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 11:
+#line 76 "relational_algebra.y" /* yacc.c:1646  */
+    {
+                                                     if(!tableValidity((yyvsp[-9].id_attributes).id_name))
+                                                     {
+                                                      yyerror("Table1 doesn not exist");
+                                                      exit(0);
+                                                     }
+                                                     if(!tableValidity((yyvsp[-1].id_attributes).id_name))
+                                                     {
+                                                      yyerror("Table2 doesn not exist");
+                                                      exit(0);
+                                                     }
+                                                     equi_join_func((yyvsp[-4].a),(yyvsp[-9].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name,global_list);
+                                                  }
+#line 1366 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 89 "relational_algebra.y" /* yacc.c:1646  */
+    {printf("3\n"); (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1372 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 90 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1378 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 91 "relational_algebra.y" /* yacc.c:1646  */
+    {printf("4\n");(yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1384 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
   case 15:
-#line 62 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(5,temp1,temp2);}
-#line 1339 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 92 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1390 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 63 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(5,temp1,temp2);}
-#line 1345 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 93 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(4,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1396 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 64 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2);}
-#line 1351 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 94 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(4,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1402 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 65 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(6,temp1,temp2);}
-#line 1357 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 95 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(5,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1408 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 66 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2);}
-#line 1363 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 96 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(5,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1414 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 67 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2);}
-#line 1369 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 97 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1420 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 68 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(7,temp1,temp2);}
-#line 1375 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 98 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(6,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1426 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 69 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2);}
-#line 1381 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 99 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(6,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1432 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 70 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(8,temp1,temp2);}
-#line 1387 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 100 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1438 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 71 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(8,temp1,temp2);}
-#line 1393 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 101 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(7,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1444 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 72 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(9,temp1,temp2);}
-#line 1399 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 102 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[-1].id_attributes).id_name); (yyval.a)=new_ast(7,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1450 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 73 "relational_algebra.y" /* yacc.c:1646  */
-    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(9,temp1,temp2);}
-#line 1405 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 103 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(8,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1456 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 74 "relational_algebra.y" /* yacc.c:1646  */
+#line 104 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(8,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1462 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 105 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name); (yyval.a)=new_ast(9,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1468 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 106 "relational_algebra.y" /* yacc.c:1646  */
+    {struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name); struct ast *temp2=new_num((yyvsp[0].val)); (yyval.a)=new_ast(9,temp1,temp2); struct var_or_const *v1 = (struct var_or_const *) temp1; struct var_or_const *v2 = (struct var_or_const *) temp2; printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype); list_pushback(global_list,v1); list_pushback(global_list,v2);}
+#line 1474 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 107 "relational_algebra.y" /* yacc.c:1646  */
     {(yyval.a)=new_ast(3,(yyvsp[0].a),NULL);}
-#line 1411 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1480 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 108 "relational_algebra.y" /* yacc.c:1646  */
+    {project_attrs[proj_attr_count]=(yyvsp[0].id_attributes).id_name; proj_attr_count++;}
+#line 1486 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 32:
+#line 109 "relational_algebra.y" /* yacc.c:1646  */
+    {project_attrs[proj_attr_count]=(yyvsp[0].id_attributes).id_name; proj_attr_count++;}
+#line 1492 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 110 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1498 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 111 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1504 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 112 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(0,(yyvsp[0].a),NULL);}
+#line 1510 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 113 "relational_algebra.y" /* yacc.c:1646  */
+    {(yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));}
+#line 1516 "relational_algebra.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 114 "relational_algebra.y" /* yacc.c:1646  */
+    {
+                                    if(!tableValidity((yyvsp[-6].id_attributes).id_name))
+                                    {
+                                     yyerror("Table1 doesn not exist");
+                                     exit(0);
+                                    }
+                                    if(!tableValidity((yyvsp[-2].id_attributes).id_name))
+                                    {
+                                     yyerror("Table2 doesn not exist");
+                                     exit(0);
+                                    }
+                                     if(!checkAttributeValidity((yyvsp[-4].id_attributes).id_name,(yyvsp[-6].id_attributes).id_name))
+                                     {
+                                        yyerror("Table1 does not contain given attribute");
+                                        exit(0);
+                                     }
+                                     if(!checkAttributeValidity((yyvsp[0].id_attributes).id_name,(yyvsp[-2].id_attributes).id_name))
+                                     {
+                                        yyerror("Table2 does not contain given attribute");
+                                        exit(0);
+                                     }
+                                     char s[200]; strcpy(s,(yyvsp[-6].id_attributes).id_name) ;strcat(s,"."); strcat(s,(yyvsp[-4].id_attributes).id_name);
+                                     char t[200]; strcpy(t,(yyvsp[-2].id_attributes).id_name) ;strcat(t,"."); strcat(t,(yyvsp[0].id_attributes).id_name);
+                                     struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name);
+                                     struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
+                                     (yyval.a)=new_ast(6,temp1,temp2);
+                                     struct var_or_const *v1 = (struct var_or_const *) temp1;
+                                     struct var_or_const *v2 = (struct var_or_const *) temp2;
+                                     v1->table_name=(yyvsp[-6].id_attributes).id_name;
+                                     v2->table_name=(yyvsp[-2].id_attributes).id_name;
+                                     printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+                                     list_pushback(global_list,v1);
+                                     list_pushback(global_list,v2);
+                                  }
+#line 1555 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1415 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1559 "relational_algebra.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1639,11 +1783,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 84 "relational_algebra.y" /* yacc.c:1906  */
+#line 149 "relational_algebra.y" /* yacc.c:1906  */
 
 
 int main()
 {
+
   yyparse();
   printf("\nValid\n");
   return 0;

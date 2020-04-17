@@ -2,25 +2,15 @@
 # include <stdlib.h>
 # include <stdarg.h>
 # include <string.h>
+# include "tree.c"
+// struct var_or_const{
+//   int nodetype;
+//   int v_or_c;          //1 => v 2=> c
+//   char *name;
+//   int num_val;
+//   char * str_val;
+// };
 
-struct var_or_const{
-  int nodetype;
-  int v_or_c;          //1 => v 2=> c
-  char *name;
-  int num_val;
-  char * str_val;
-};
-
-typedef struct listnode{
-	struct var_or_const * data;
-	struct listnode * prev;
-	struct listnode * next;
-}lNode;
-
-typedef struct list{
-	struct listnode * head;
-	struct listnode * tail;
-}list;
 
 
 lNode * create_node(struct var_or_const * data){
@@ -39,7 +29,7 @@ list * create_list(){
 
 void list_pushback(list * l,struct var_or_const * data){
 	lNode * temp = create_node(data);
-	
+
 	if(l->head==NULL)
 	{
 		l->head = temp;
@@ -71,7 +61,7 @@ void printList(list * l)
 	lNode * temp = l->head;
 	while(temp !=NULL)
 	{
-		printf("%d ", temp->data->nodetype);
+		printf("fdfdfdfdf%d ", temp->data->nodetype);
 		temp = temp->next;
 	}
 	printf("\n");
@@ -97,32 +87,32 @@ void list_popback(list * l){ //returns last entry, deletes it from list
 	printf("Node deleted\n");
 }
 
-int main()
-{
-	struct var_or_const * temp = (struct var_or_const *)malloc(sizeof(struct var_or_const));
-	list * l = create_list();
-	temp->nodetype = 1;
-	list_pushback(l, temp);
-	struct var_or_const * temp2 = (struct var_or_const *)malloc(sizeof(struct var_or_const));
-	temp2->nodetype = 2;
-	list_pushback(l, temp2);
-	struct var_or_const * temp3 = (struct var_or_const *)malloc(sizeof(struct var_or_const));
-	temp3->nodetype = 20;
-	list_pushback(l, temp3);
-	printList(l);
-
-	
-	struct var_or_const * seek = list_seekend(l);
-	printf("%d\n", seek->nodetype);
-
-	list_popback(l);
-	seek = list_seekend(l);
-	printf("%d\n", seek->nodetype);	
-	// for(int i = 1; i<=1; i+=2)
-	// {
-	// 	temp->nodetype = i;
-	// 	list_pushback(l, temp);
-	// }
-	printList(l);
-	return 0;
-}
+// int main()
+// {
+// 	struct var_or_const * temp = (struct var_or_const *)malloc(sizeof(struct var_or_const));
+// 	list * l = create_list();
+// 	temp->nodetype = 1;
+// 	list_pushback(l, temp);
+// 	struct var_or_const * temp2 = (struct var_or_const *)malloc(sizeof(struct var_or_const));
+// 	temp2->nodetype = 2;
+// 	list_pushback(l, temp2);
+// 	struct var_or_const * temp3 = (struct var_or_const *)malloc(sizeof(struct var_or_const));
+// 	temp3->nodetype = 20;
+// 	list_pushback(l, temp3);
+// 	printList(l);
+//
+//
+// 	struct var_or_const * seek = list_seekend(l);
+// 	printf("%d\n", seek->nodetype);
+//
+// 	list_popback(l);
+// 	seek = list_seekend(l);
+// 	printf("%d\n", seek->nodetype);
+// 	// for(int i = 1; i<=1; i+=2)
+// 	// {
+// 	// 	temp->nodetype = i;
+// 	// 	list_pushback(l, temp);
+// 	// }
+// 	printList(l);
+// 	return 0;
+// }
