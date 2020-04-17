@@ -2,7 +2,8 @@
 # include <stdlib.h>
 # include <stdarg.h>
 # include <string.h>
-#include "tablevalidator.c"
+# include <stdbool.h>
+# include "tablevalidator.c"
 
 void yyerror(const char *s);
 /* interface to the lexer */
@@ -56,6 +57,35 @@ struct ast *new_var(char *var_name);
 int eval(struct ast *);
 /* delete and free an AST */
 void treefree(struct ast *);
+
+
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+// Function to perform Selection Sort
+void selectionSort(int arr[], int n)
+{
+    int i, j, min_idx;
+
+    // One by one move boundary of unsorted subarray
+    for (i = 0; i < n - 1; i++) {
+
+        // Find the minimum element in unsorted array
+        min_idx = i;
+        for (j = i + 1; j < n; j++)
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+
+        // Swap the found minimum element
+        // with the first element
+        swap(&arr[min_idx], &arr[i]);
+    }
+}
+
 
 void select_func(struct ast *node,char * tablename , list *global_list)
 {
@@ -154,12 +184,57 @@ void select_func(struct ast *node,char * tablename , list *global_list)
     fclose(fp);
 }
 
-void project_func(int count,char **project_attrs,char *table)
+void project_func(int count,char **project_attrs,char *tablename)
 {
+  printf("\n");
+  int indices[1000];
   for(int i=0;i<count;i++)
   {
-     printf("kkkkkkkkk %s\n",project_attrs[i]);
+    indices[i] = checkAttributeValidity(project_attrs[i],tablename);
+    if(indices[i]==-1)
+    {
+      yyerror("Attribute not present");
+      exit(0);
+    }
   }
+  char table[200];
+  memset(table,0,sizeof(tablename));
+  sprintf(table,"tables/%s.csv",tablename);
+  FILE* fp = fopen(table, "r");
+  char s[1000];
+  char comma[]=",";
+
+  while(fgets(s,sizeof(s),fp))
+  {
+    char *aux[100];
+    sscanf(s,"%[^\n]comma",s);
+    char *token = strtok(s,comma);
+    int j=0;
+    bool is_first=true;
+    while(token!=NULL)
+    {
+      for(int k=0;k<count;k++)
+      {
+        if(j==indices[k])
+        {
+          if(is_first)
+          {
+            is_first=false;
+            printf("%s",token);
+          }
+          else
+          {
+            printf(",%s",token);
+          }
+          break;
+        }
+      }
+      token = strtok(NULL,comma);
+      j++;
+    }
+    printf("\n");
+  }
+  fclose(fp);
 }
 
 void equi_join_func(struct ast *node,char *table1, char *table2,list *global_list)
