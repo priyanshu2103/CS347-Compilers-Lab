@@ -2,7 +2,9 @@
 
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
 #include "relational_algebra.tab.h"
+char *trimwhitespace(char *str);
 
 %}
 
@@ -29,9 +31,29 @@ b   [ ]*
 {b}"\."{b}                                      				{printf("%s ",yytext ); return DOT;}
 {b}"("{b}                                       				{printf("%s ",yytext ); return LP;}
 {b}")"{b}                                       				{printf("%s ",yytext ); return RP;}
-{b}[A-Za-z_][0-9A-Za-z_]*{b}                    				{yylval.id_attributes.id_name= strdup(yytext);  printf("%s ",yytext ); return ID; }
+{b}[A-Za-z_][0-9A-Za-z_]*{b}                    				{yylval.id_attributes.id_name=trimwhitespace(strdup(yytext));  printf("%s ",yytext ); return ID; }
 {b}[0-9]+{b}                                    				{yylval.val= atoi(yytext);  printf("%s ",yytext ); return INT; }
 {b}"'"{b}																								{printf("%s ",yytext ); return QUOTE;}
 \n 																											{printf("%s ",yytext ); return NEWLINE; }
 
 %%
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
+}

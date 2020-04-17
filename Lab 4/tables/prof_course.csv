@@ -1,4 +1,4 @@
-Prof_id,Prof_name,sex,dept_id,Research_area,Course_Id
+Prof_id,Prof_name,sex,Dept_Id,Research_area,Course_Id
 1200,CHANDAN KARFA,M,3,SPEECH,101
 1201,M. DAS,M,4,ML,102
 1202,MOMITA PATRA,F,5,DS,103

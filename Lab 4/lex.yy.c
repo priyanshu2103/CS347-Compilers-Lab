@@ -609,9 +609,11 @@ char *yytext;
 
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
 #include "relational_algebra.tab.h"
+char *trimwhitespace(char *str);
 
-#line 615 "lex.yy.c"
+#line 617 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -829,10 +831,10 @@ YY_DECL
 		}
 
 	{
-#line 13 "relational_algebra.l"
+#line 15 "relational_algebra.l"
 
 
-#line 836 "lex.yy.c"
+#line 838 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -891,116 +893,116 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "relational_algebra.l"
+#line 17 "relational_algebra.l"
 {printf("%s ",yytext ); return SELECT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "relational_algebra.l"
+#line 18 "relational_algebra.l"
 {printf("%s ",yytext ); return PROJECT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "relational_algebra.l"
+#line 19 "relational_algebra.l"
 {printf("%s ",yytext ); return CARTESIAN_PRODUCT;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "relational_algebra.l"
+#line 20 "relational_algebra.l"
 {printf("%s ",yytext );	return EQUI_JOIN;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "relational_algebra.l"
+#line 21 "relational_algebra.l"
 {printf("%s ",yytext ); return LE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "relational_algebra.l"
+#line 22 "relational_algebra.l"
 {printf("%s ",yytext ); return GE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "relational_algebra.l"
+#line 23 "relational_algebra.l"
 {printf("%s ",yytext ); return EQ;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "relational_algebra.l"
+#line 24 "relational_algebra.l"
 {printf("%s ",yytext ); return NEQ;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "relational_algebra.l"
+#line 25 "relational_algebra.l"
 {printf("%s ",yytext ); return LT;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "relational_algebra.l"
+#line 26 "relational_algebra.l"
 {printf("%s ",yytext ); return GT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "relational_algebra.l"
+#line 27 "relational_algebra.l"
 {printf("%s ",yytext ); return AND;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "relational_algebra.l"
+#line 28 "relational_algebra.l"
 {printf("%s ",yytext ); return OR;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "relational_algebra.l"
+#line 29 "relational_algebra.l"
 {printf("%s ",yytext ); return NOT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "relational_algebra.l"
+#line 30 "relational_algebra.l"
 {printf("%s ",yytext ); return COMMA;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "relational_algebra.l"
+#line 31 "relational_algebra.l"
 {printf("%s ",yytext ); return DOT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "relational_algebra.l"
+#line 32 "relational_algebra.l"
 {printf("%s ",yytext ); return LP;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "relational_algebra.l"
+#line 33 "relational_algebra.l"
 {printf("%s ",yytext ); return RP;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "relational_algebra.l"
-{yylval.id_attributes.id_name= strdup(yytext);  printf("%s ",yytext ); return ID; }
+#line 34 "relational_algebra.l"
+{yylval.id_attributes.id_name=trimwhitespace(strdup(yytext));  printf("%s ",yytext ); return ID; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "relational_algebra.l"
+#line 35 "relational_algebra.l"
 {yylval.val= atoi(yytext);  printf("%s ",yytext ); return INT; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "relational_algebra.l"
+#line 36 "relational_algebra.l"
 {printf("%s ",yytext ); return QUOTE;}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 35 "relational_algebra.l"
+#line 37 "relational_algebra.l"
 {printf("%s ",yytext ); return NEWLINE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 37 "relational_algebra.l"
+#line 39 "relational_algebra.l"
 ECHO;
 	YY_BREAK
-#line 1004 "lex.yy.c"
+#line 1006 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2001,7 +2003,27 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 37 "relational_algebra.l"
+#line 39 "relational_algebra.l"
 
 
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
+}
 

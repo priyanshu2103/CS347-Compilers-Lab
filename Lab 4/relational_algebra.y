@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "relational_algebra.tab.h"
-#include "list.c"
+#include "helper.c"
 
 extern int yylex(void);
 extern void yyterminate();
@@ -14,15 +14,14 @@ int proj_attr_count=0;
 
 enum id_val{attribute=1,table=2};
 
-// not included float yet
 // use snprintf while printing so that we can print together at last or after each statement and not print if syntax error
 // use printf in place of yyerror if want to print some variable names using %s
-// need to see if rhs is int in <=,>=,<,> cases
 // 0 as it is
 // 1 and
 // 2 or
 // 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
 // spaces causing problem in line 32 yytext carries space as well , remove them
+// duplicates in project
 %}
 
 %union {struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;}
@@ -65,13 +64,11 @@ stmts : stmt |
 
 stmt : SELECT {list *select_list = create_list();global_list=select_list;} LT cond GT LP ID RP
        {
-         printf("2\n");
          if(!tableValidity($7.id_name))
          {
-           yyerror("Table does not exist");
+           printf("Table %s does not exist\n",$7.id_name);
            exit(0);
          }
-         printList(global_list);
          select_func($4,$7.id_name,global_list);
        }|
 
@@ -79,7 +76,7 @@ stmt : SELECT {list *select_list = create_list();global_list=select_list;} LT co
        {
          if(!tableValidity($7.id_name))
          {
-           yyerror("Table does not exist");
+           printf("Table %s does not exist\n",$7.id_name);
            exit(0);
          }
          project_func(proj_attr_count,project_attrs,$7.id_name);
@@ -89,12 +86,12 @@ stmt : SELECT {list *select_list = create_list();global_list=select_list;} LT co
        {
          if(!tableValidity($2.id_name))
          {
-           yyerror("Table1 does not exist");
+           printf("Table %s does not exist\n",$2.id_name);
            exit(0);
          }
          if(!tableValidity($6.id_name))
          {
-           yyerror("Table2 does not exist");
+           printf("Table %s does not exist\n",$6.id_name);
            exit(0);
          }
          cartesian_product_func($2.id_name,$6.id_name);
@@ -104,12 +101,12 @@ stmt : SELECT {list *select_list = create_list();global_list=select_list;} LT co
        {
          if(!tableValidity($2.id_name))
          {
-           yyerror("Table1 doesn not exist");
+           printf("Table %s does not exist\n",$2.id_name);
            exit(0);
          }
          if(!tableValidity($10.id_name))
          {
-           yyerror("Table2 doesn not exist");
+           printf("Table %s does not exist\n",$10.id_name);
            exit(0);
          }
          equi_join_func($7,$2.id_name,$10.id_name,global_list);
@@ -127,7 +124,7 @@ cond : and_expr
 
 and_expr : expr
            {
-              printf("4\n");$$=new_ast(0,$1,NULL);
+              $$=new_ast(0,$1,NULL);
            }|
 
            expr AND and_expr
@@ -142,8 +139,9 @@ expr : ID LE ID
           $$=new_ast(4,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
-          list_pushback(global_list,v1); list_pushback(global_list,v2);
+
+          list_pushback(global_list,v1);
+          list_pushback(global_list,v2);
        }|
 
        ID LE INT
@@ -153,7 +151,7 @@ expr : ID LE ID
           $$=new_ast(4,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -165,7 +163,7 @@ expr : ID LE ID
           $$=new_ast(5,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -177,7 +175,7 @@ expr : ID LE ID
           $$=new_ast(5,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -189,7 +187,7 @@ expr : ID LE ID
           $$=new_ast(6,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -201,7 +199,7 @@ expr : ID LE ID
           $$=new_ast(6,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -213,7 +211,7 @@ expr : ID LE ID
           $$=new_ast(6,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -225,7 +223,7 @@ expr : ID LE ID
           $$=new_ast(7,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -237,7 +235,7 @@ expr : ID LE ID
           $$=new_ast(7,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -249,7 +247,7 @@ expr : ID LE ID
           $$=new_ast(7,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -261,7 +259,7 @@ expr : ID LE ID
           $$=new_ast(8,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -273,7 +271,7 @@ expr : ID LE ID
           $$=new_ast(8,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -285,7 +283,7 @@ expr : ID LE ID
           $$=new_ast(9,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -297,7 +295,7 @@ expr : ID LE ID
           $$=new_ast(9,temp1,temp2);
           struct var_or_const *v1 = (struct var_or_const *) temp1;
           struct var_or_const *v2 = (struct var_or_const *) temp2;
-          printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }|
@@ -343,22 +341,22 @@ mul_expr : ID DOT ID EQ ID DOT ID
            {
               if(!tableValidity($1.id_name))
               {
-                yyerror("Table1 doesn not exist");
+                printf("Table %s does not exist\n",$1.id_name);
                 exit(0);
               }
               if(!tableValidity($5.id_name))
               {
-                yyerror("Table2 doesn not exist");
+                printf("Table %s does not exist\n",$5.id_name);
                 exit(0);
               }
               if(checkAttributeValidity($3.id_name,$1.id_name)==-1)
               {
-                yyerror("Table1 does not contain given attribute");
+                printf("Table %s does not contain attribute %s\n",$1.id_name,$3.id_name);
                 exit(0);
               }
               if(checkAttributeValidity($7.id_name,$5.id_name)==-1)
               {
-                yyerror("Table2 does not contain given attribute");
+                printf("Table %s does not contain attribute %s\n",$5.id_name,$7.id_name);
                 exit(0);
               }
 
@@ -369,7 +367,7 @@ mul_expr : ID DOT ID EQ ID DOT ID
               struct var_or_const *v2 = (struct var_or_const *) temp2;
               v1->table_name=$1.id_name;
               v2->table_name=$5.id_name;
-              printf("hhhhhhhhh %d %d\n",v1->nodetype,v2->nodetype);
+
               list_pushback(global_list,v1);
               list_pushback(global_list,v2);
            };
@@ -378,10 +376,7 @@ mul_expr : ID DOT ID EQ ID DOT ID
 
 int main()
 {
-//  int d=retrieveDatatype("Intake","course");
-//  printf("%d\n",d);
   yyparse();
-  printf("\nValid\n");
   return 0;
 }
 void yyerror(const char *s)
