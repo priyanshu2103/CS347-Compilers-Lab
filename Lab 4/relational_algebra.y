@@ -18,7 +18,7 @@ enum id_val{attribute=1,table=2};
 // 1 and
 // 2 or
 // 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
-// duplicates in project
+
 %}
 
 %union {struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;}
