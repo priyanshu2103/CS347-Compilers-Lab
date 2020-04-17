@@ -1,4 +1,4 @@
-Course_ID,InTake,Course_Name,Course_Type,Room,Dept_ID,Since
+Course_ID,Intake,Course_Name,Course_Type,Room,Dept_ID,Since
 101,45,CBNG,CLASS,24,3,1999
 102,16,AB,CLASS,25,4,1992
 103,20,AC,CLASS,24,5,1999
