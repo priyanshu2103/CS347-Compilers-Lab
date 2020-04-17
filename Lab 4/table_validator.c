@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-int getSize (char * s)
+int getSize(char* s)
 {
     char * t; // first copy the pointer to not change the original
     int size = 0;
@@ -14,6 +14,77 @@ int getSize (char * s)
     }
     return size;
 }
+
+int convertInt(char* s)
+{
+	char str[]=s;
+	int size=getSize(s);
+	int num=0;
+	for(int i=0;i<size;i++)
+	{
+		int temp=str[i]-'0';
+		num=num*10+temp;
+	}
+	return num;
+}
+
+void merge(int arr[], int l, int m, int r) 
+{ 
+    int i, j, k; 
+    int n1 = m - l + 1; 
+    int n2 =  r - m; 
+    int L[n1], R[n2]; 
+  
+    for (i = 0; i < n1; i++) 
+        L[i] = arr[l + i]; 
+    for (j = 0; j < n2; j++) 
+        R[j] = arr[m + 1+ j]; 
+  
+    i = 0; // Initial index of first subarray 
+    j = 0; // Initial index of second subarray 
+    k = l; // Initial index of merged subarray 
+    while (i < n1 && j < n2) 
+    { 
+        if (L[i] <= R[j]) 
+        { 
+            arr[k] = L[i]; 
+            i++; 
+        } 
+        else
+        { 
+            arr[k] = R[j]; 
+            j++; 
+        } 
+        k++; 
+    } 
+  
+    while (i < n1) 
+    { 
+        arr[k] = L[i]; 
+        i++; 
+        k++; 
+    } 
+  
+    while (j < n2) 
+    { 
+        arr[k] = R[j]; 
+        j++; 
+        k++; 
+    } 
+} 
+  
+void mergeSort(int arr[], int l, int r) 
+{ 
+    if (l < r) 
+    { 
+        int m = l+(r-l)/2;  
+        mergeSort(arr, l, m); 
+        mergeSort(arr, m+1, r); 
+        merge(arr, l, m, r); 
+    }
+} 
+
+/****************************************************************/
 
 // checks table name validity
 bool tableValidity(char* tablename)
@@ -151,4 +222,137 @@ void retrieveRecords(char* tablename,char* attribute)
   }
   fclose(fp);
   return;
+}
+
+int* removeIntDup(char* attribute,char* tablename)
+{
+	int index=checkAttributeValidity(attribute,tablename);
+	if(index==-1)
+		return;
+
+	char table[200];
+  	memset(table,0,sizeof(table));
+  	sprintf(table,"tables/%s.csv",tablename);
+  	FILE* fp=fopen(table,"r");
+  	int arr[10000];
+  	char s[1000];
+  	char comma[]=",";
+  	fgets(s,sizeof(s),fp);
+  	int count=0;
+  	while(fgets(s,sizeof(s),fp))
+  	{
+  		sscanf(s,"%[^\n]comma",s);
+	  	char *token = strtok(s,comma);
+	  	int j=0;
+	    while(token!=NULL)
+	    {
+	        if(index == j)
+	        {
+	        	int temp=convertInt(token);
+	        	arr[count++]=temp;
+	        	break;
+	        }
+	        token = strtok(NULL,comma);
+	        j++;
+	    }
+  	}
+  	int ans[count];
+  	for(int i=0;i<count;i++)
+  		ans[i]=arr[i];
+  	mergeSort(ans,0,count-1);
+
+  	int ans2[count];
+  	int count2=0;
+  	ans2[count2]=ans[0];
+  	count2++;
+  	for(int i=1;i<count;i++)
+  	{
+  		if(ans[i]==ans[i-1])
+  			continue;
+  		else
+  			ans2[count2++]=ans[i];
+  	}
+  	int answer[count2];
+  	for(int i=0;i<count2;i++)
+  		answer[i]=ans2[i];
+  	return answer;
+}
+
+char** removeStringDup(attribute,tablename)
+{
+	int index=checkAttributeValidity(attribute,tablename);
+	if(index==-1)
+		return;
+
+	char table[200];
+  	memset(table,0,sizeof(table));
+  	sprintf(table,"tables/%s.csv",tablename);
+  	FILE* fp=fopen(table,"r");
+  	char arr[1000][1000];
+  	char s[1000];
+  	char comma[]=",";
+  	fgets(s,sizeof(s),fp);
+  	int count=0;
+  	while(fgets(s,sizeof(s),fp))
+  	{
+  		sscanf(s,"%[^\n]comma",s);
+	  	char *token = strtok(s,comma);
+	  	int j=0;
+	    while(token!=NULL)
+	    {
+	        if(index == j)
+	        {
+	        	arr[count++]=token;
+	        	break;
+	        }
+	        token = strtok(NULL,comma);
+	        j++;
+	    }
+  	}
+  	// plain old bubble sort
+  	for(int i=0;i<count-1;i++)
+  	{
+  		for(int j=i+1;j<count;j++)
+  		{
+  			char temp[1000];
+  			if (strcmp(arr[j], arr[i]) > 0) 
+            { 
+                strcpy(temp, arr[j]); 
+                strcpy(arr[j], arr[i]); 
+                strcpy(arr[i], temp); 
+            } 
+  		}
+  	}
+  	char ans[count][1000];
+  	int count2=0;
+  	ans[count2]=arr[0];
+  	count2++;
+  	for(int i=1;i<count;i++)
+  	{
+  		if(strcmp(arr[i],arr[i-1])==0)
+  			continue;
+  		else
+  			ans[count2++]=arr[i];
+  	}
+  	char answer[count2][1000];
+  	for(int i=0;i<count2;i++)
+  		answer[i]=ans[i];
+  	return answer;
+}
+
+void Duplicates(char* attribute,char* tablename)
+{
+	int data_type=retrieveDatatype(attribute,tablename);
+	if(data_type==-1)
+		return;
+	if(data_type==1)
+	{
+		int* p=removeIntDup(attribute,tablename);
+		return;
+	}
+	else
+	{
+		char** p=removeStringDup(attribute,tablename);
+		return;
+	}
 }
