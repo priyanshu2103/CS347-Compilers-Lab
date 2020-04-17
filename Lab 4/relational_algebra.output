@@ -1,3 +1,7 @@
+State 18 conflicts: 1 shift/reduce
+State 19 conflicts: 1 shift/reduce
+
+
 Grammar
 
     0 $accept: stmts $end
@@ -39,7 +43,7 @@ Grammar
    26     | ID LT INT
    27     | ID GT ID
    28     | ID GT INT
-   29     | NOT expr
+   29     | NOT cond
 
    30 attr_list: ID
 
@@ -98,12 +102,12 @@ $@2 (28)
 $@3 (29)
     on left: 9, on right: 10
 cond (30)
-    on left: 11 12, on right: 5 12
+    on left: 11 12, on right: 5 12 29
 and_expr (31)
     on left: 13 14, on right: 11 12 14
 expr (32)
     on left: 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29, on right:
-    13 14 29
+    13 14
 attr_list (33)
     on left: 30 32, on right: 7 32
 $@4 (34)
@@ -255,12 +259,14 @@ State 14
 
 State 15
 
-   29 expr: NOT . expr
+   29 expr: NOT . cond
 
     NOT  shift, and go to state 15
     ID   shift, and go to state 16
 
-    expr  go to state 24
+    cond      go to state 24
+    and_expr  go to state 18
+    expr      go to state 19
 
 
 State 16
@@ -302,6 +308,7 @@ State 18
 
     OR  shift, and go to state 32
 
+    OR        [reduce using rule 11 (cond)]
     $default  reduce using rule 11 (cond)
 
 
@@ -312,6 +319,7 @@ State 19
 
     AND  shift, and go to state 33
 
+    AND       [reduce using rule 13 (and_expr)]
     $default  reduce using rule 13 (and_expr)
 
 
@@ -351,7 +359,7 @@ State 23
 
 State 24
 
-   29 expr: NOT expr .
+   29 expr: NOT cond .
 
     $default  reduce using rule 29 (expr)
 

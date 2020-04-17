@@ -14,13 +14,10 @@ int proj_attr_count=0;
 
 enum id_val{attribute=1,table=2};
 
-// use snprintf while printing so that we can print together at last or after each statement and not print if syntax error
-// use printf in place of yyerror if want to print some variable names using %s
 // 0 as it is
 // 1 and
 // 2 or
 // 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
-// spaces causing problem in line 32 yytext carries space as well , remove them
 // duplicates in project
 %}
 
@@ -300,7 +297,7 @@ expr : ID LE ID
           list_pushback(global_list,v2);
        }|
 
-       NOT expr
+       NOT cond
        {
           $$=new_ast(3,$2,NULL);
        };
