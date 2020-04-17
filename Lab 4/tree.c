@@ -6,13 +6,15 @@ void yyerror(const char *s);
 /* interface to the lexer */
 extern int yylineno; /* from lexer */
 /* nodes in the abstract syntax tree */
-struct ast {
+struct ast
+{
  int nodetype;
  struct ast *l;
  struct ast *r;
 };
 
-struct var_or_const{
+struct var_or_const
+{
   int nodetype;
   int v_or_c;          //1 => v 2=> c
   char *name;
@@ -21,20 +23,23 @@ struct var_or_const{
   char * table_name;
 };
 
-struct result{
+struct result
+{
   int is_num_or_str;      // 1=>num 2=>str
   int num_val;
   char *str_val;
   int res;
 };
 
-typedef struct listnode{
+typedef struct listnode
+{
 	struct var_or_const * data;
 	struct listnode * prev;
 	struct listnode * next;
 }lNode;
 
-typedef struct list{
+typedef struct list
+{
 	struct listnode * head;
 	struct listnode * tail;
 }list;
@@ -53,6 +58,7 @@ void select_func(struct ast *node,char * table, list *global_list)
 {
 
 }
+
 void project_func(int count,char **project_attrs,char *table)
 {
   for(int i=0;i<count;i++)
@@ -60,12 +66,13 @@ void project_func(int count,char **project_attrs,char *table)
      printf("kkkkkkkkk %s\n",project_attrs[i]);
   }
 }
+
 void equi_join_func(struct ast *node,char *table1, char *table2,list *global_list)
 {
 
 }
-struct ast *
-new_ast(int nodetype, struct ast *l, struct ast *r)
+
+struct ast *new_ast(int nodetype, struct ast *l, struct ast *r)
 {
  struct ast *a = malloc(sizeof(struct ast));
 
@@ -78,8 +85,8 @@ new_ast(int nodetype, struct ast *l, struct ast *r)
  a->r = r;
  return a;
 }
-struct ast *
-new_num(int d)
+
+struct ast *new_num(int d)
 {
  struct var_or_const *a = malloc(sizeof(struct var_or_const));
  if(!a) {
@@ -91,8 +98,8 @@ new_num(int d)
   a->v_or_c=2;
   return (struct ast *)a;
  }
- struct ast *
- new_str(char *n)
+
+ struct ast *new_str(char *n)
  {
   struct var_or_const *a = malloc(sizeof(struct var_or_const));
   if(!a) {
@@ -104,8 +111,8 @@ new_num(int d)
    a->v_or_c=2;
    return (struct ast *)a;
  }
- struct ast *
- new_var(char *n)
+
+ struct ast *new_var(char *n)
  {
   struct var_or_const *a = malloc(sizeof(struct var_or_const));
   if(!a) {
@@ -117,8 +124,8 @@ new_num(int d)
    a->v_or_c=1;
    return (struct ast *)a;
  }
-struct result *
-eval(struct ast *a)
+
+struct result *eval(struct ast *a)
 {
  struct result *temp = malloc(sizeof(struct result));
  switch(a->nodetype) {

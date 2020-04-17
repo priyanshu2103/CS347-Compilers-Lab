@@ -74,7 +74,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 25 "relational_algebra.y" /* yacc.c:1909  */
+#line 28 "relational_algebra.y" /* yacc.c:1909  */
 struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;
 
 #line 81 "relational_algebra.tab.h" /* yacc.c:1909  */

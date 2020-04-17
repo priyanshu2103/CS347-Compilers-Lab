@@ -13,21 +13,24 @@
 
 
 
-lNode * create_node(struct var_or_const * data){
+lNode * create_node(struct var_or_const * data)
+{
 	lNode * temp = (lNode *)malloc(sizeof(lNode));
 	temp->prev = NULL;
-    temp->next = NULL;
-    temp->data = data;
-    return temp;
+  temp->next = NULL;
+  temp->data = data;
+  return temp;
 }
 
-list * create_list(){
-    list * l = (list *)malloc(sizeof(list));
-    l->head = l->tail = NULL;
-    return l;
+list * create_list()
+{
+  list * l = (list *)malloc(sizeof(list));
+  l->head = l->tail = NULL;
+  return l;
 }
 
-void list_pushback(list * l,struct var_or_const * data){
+void list_pushback(list * l,struct var_or_const * data)
+{
 	lNode * temp = create_node(data);
 
 	if(l->head==NULL)
@@ -49,7 +52,8 @@ struct var_or_const * list_seekend(list * l)
 	{
 		return l->tail->data;
 	}
-	else{
+	else
+  {
 		printf("Error: list empty\n");
 		return NULL;
 	}
@@ -68,7 +72,8 @@ void printList(list * l)
 }
 
 
-void list_popback(list * l){ //returns last entry, deletes it from list
+void list_popback(list * l)
+{ //returns last entry, deletes it from list
 	if(l->head == NULL)
 	{
 		printf("Error: list empty\n");
