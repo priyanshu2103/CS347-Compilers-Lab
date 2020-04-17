@@ -3,6 +3,20 @@
 #include <string.h>
 #include <stdbool.h>
 
+int getSize (char * s)
+{
+    char * t; // first copy the pointer to not change the original
+    int size = 0;
+
+    for (t = s; *t != '\0'; t++) {
+        size++;
+    }
+    return size;
+}
+
+/*********************************************************************************/
+
+
 // checks table name validity
 bool tableValidity(char* tablename)
 {
@@ -56,6 +70,87 @@ int checkAttributeValidity(char* attribute,char* tablename)
 	return -1;
 }
 
+// returns -1 if attribute/table does not exist, returns 1 for int, 2 for string
+int retrieveDatatype(char* attribute,char* tablename)
+{
+	int index=checkAttributeValidity(attribute,tablename);
+	if(index==-1)
+	{
+		printf("Table/attribute name does not exist\n");
+		return -1;
+	}
+
+	char table[200];
+    memset(table,0,sizeof(table));
+    sprintf(table,"tables/%s.csv",tablename);
+    FILE* fp = fopen(table, "r");
+    char s[1000];
+    char comma[] = ",";
+    fgets(s,sizeof(s),fp);
+    fgets(s,sizeof(s),fp);
+    sscanf(s,"%[^\n]comma",s);
+    char *token = strtok(s,comma);
+    int j=0;
+    while(token!=NULL)
+    {
+        if(index == j)
+        {
+            fclose(fp);
+            char str[]=token;
+            int size=getSize(token);
+            for(int i=0;i<size;i++)
+            {
+            	char temp=str[i];
+            	if(temp>='0'&&temp<='9')
+            		continue;
+            	else
+            		return 2;
+            }
+            return 1;
+        }
+        token = strtok(NULL,comma);
+        j++;
+    }
+    fclose(fp);
+    return -1;
+}
+
+void retrieveRecords(char* tablename,char* attribute)
+{
+	int index=checkAttributeValidity(attribute,tablename);
+	if(index==-1)
+	{
+		printf("Table/attribute name does not exist\n");
+		return;
+	}
+
+	char table[200];
+    memset(table,0,sizeof(table));
+    sprintf(table,"tables/%s.csv",tablename);
+    FILE* fp = fopen(table, "r");
+    char s[1000];
+    char comma[]=",";
+    fgets(s,sizeof(s),fp);
+    while(fgets(s,sizeof(s),fp))
+    {
+    	sscanf(s,"%[^\n]comma",s);
+    	char *token = strtok(str,comma);
+    	int j=0;
+	    while(token!=NULL)
+	    {
+	        if(index == j)
+	        {
+	        	printf("%s\n",token);
+	        }
+	        token = strtok(NULL,comma);
+	        j++;
+	    }
+    }
+    fclose(fp);
+    return;
+}
+
+
 void printCartesianProduct(char* tablename1,char* tablename2)
 {
 	// if(!tableValidity(tablename1))
@@ -102,8 +197,8 @@ void printCartesianProduct(char* tablename1,char* tablename2)
     }
 
     // printing records
-    fgets(s1,sizeof(s1),fp1);
-    fgets(s2,sizeof(s2),fp2);
+    // fgets(s1,sizeof(s1),fp1);
+    // fgets(s2,sizeof(s2),fp2);
     fclose(fp2);
     while(fgets(s1,sizeof(s1),fp1))
     {
@@ -120,83 +215,6 @@ void printCartesianProduct(char* tablename1,char* tablename2)
         fclose(fp2);
     }
     fclose(fp1);
-}
-
-// returns -1 if attribute/table does not exist, returns 1 for int, 2 for string
-int retrieveDatatype(char* attribute,char* tablename)
-{
-	int index=checkAttributeValidity(attribute,tablename);
-	if(index==-1)
-	{
-		printf("Table/attribute name does not exist\n");
-		return -1;
-	}
-
-	char table[200];
-    memset(table,0,sizeof(table));
-    sprintf(table,"tables/%s.csv",tablename);
-    FILE* fp = fopen(table, "r");
-    char s[1000];
-    char comma[] = ",";
-    fgets(s,sizeof(s),fp);
-    fgets(s,sizeof(s),fp);
-    sscanf(s,"%[^\n]comma",s);
-    char *token = strtok(s,comma);
-    char data_int[]="int";
-    char data_string[]="string";
-    int j=0;
-    while(token!=NULL)
-    {
-        if(index == j)
-        {
-            fclose(fp);
-            if(strcmp(data_int,token)==0)
-            	return 1;
-            if(strcmp(data_string,token)==0)
-            	return 2;
-
-        }
-        token = strtok(NULL,comma);
-        j++;
-    }
-    fclose(fp);
-    return -1;
-}
-
-void retrieveRecords(char* tablename,char* attribute)
-{
-	int index=checkAttributeValidity(attribute,tablename);
-	if(index==-1)
-	{
-		printf("Table/attribute name does not exist\n");
-		return;
-	}
-
-	char table[200];
-    memset(table,0,sizeof(table));
-    sprintf(table,"tables/%s.csv",tablename);
-    FILE* fp = fopen(table, "r");
-    char s[1000];
-    char comma[]=",";
-    fgets(s,sizeof(s),fp);
-    fgets(s,sizeof(s),fp);
-    while(fgets(s,sizeof(s),fp))
-    {
-    	sscanf(s,"%[^\n]comma",s);
-    	char *token = strtok(str,comma);
-    	int j=0;
-	    while(token!=NULL)
-	    {
-	        if(index == j)
-	        {
-	        	printf("%s\n",token);
-	        }
-	        token = strtok(NULL,comma);
-	        j++;
-	    }
-    }
-    fclose(fp);
-    return;
 }
 
 // int main()
