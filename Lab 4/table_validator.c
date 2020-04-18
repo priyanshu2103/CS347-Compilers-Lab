@@ -288,6 +288,7 @@ int removeStringDup(char* attribute,char* tablename,char answer[1000][1000])
   	sprintf(table,"tables/%s.csv",tablename);
   	FILE* fp=fopen(table,"r");
   	char arr[1000][1000];
+    memset(arr,0,sizeof(arr));
   	char s[1000];
   	char comma[]=",";
   	fgets(s,sizeof(s),fp);
@@ -326,6 +327,7 @@ int removeStringDup(char* attribute,char* tablename,char answer[1000][1000])
   		}
   	}
   	char ans[1000][1000];
+    memset(ans,0,sizeof(ans));
   	int count2=0;
   	for(int i=0;i<count;i++)
   	{
@@ -365,6 +367,7 @@ void Duplicates(char* attribute,char* tablename)
 	if(data_type==1)
 	{
 		int answer[1000];
+    memset(answer,0,sizeof(answer));
 		int p=removeIntDup(attribute,tablename,answer);
 		for(int i=0;i<p;i++)
 			printf("%d\n",answer[i]);
@@ -373,6 +376,7 @@ void Duplicates(char* attribute,char* tablename)
 	else
 	{
 		char answer[1000][1000];
+    memset(answer,0,sizeof(answer));
 		int p=removeStringDup(attribute,tablename,answer);
 		for(int i=0;i<p;i++)
 		{
