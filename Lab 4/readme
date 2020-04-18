@@ -1,0 +1,5 @@
+All tables should be present in the /tables folder, and table name should be there in the tablenames.txt file
+To run:
+make clean
+make
+./a.out (if manual input) OR ./a.out < Testfile (if input from Testfile)
