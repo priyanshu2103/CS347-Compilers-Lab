@@ -17,7 +17,7 @@ int getSize(char* s)
 
 int convertInt(char* s)
 {
-	char str[]=s;
+	char *str=s;
 	int size=getSize(s);
 	int num=0;
 	for(int i=0;i<size;i++)
@@ -173,12 +173,12 @@ int retrieveDatatype(char* attribute,char* tablename)
           	char temp=str[i];
           	if(temp>='0'&&temp<='9')
           	{
-							continue;
+				continue;
           	}
-						else
+			else
           	{
-							return 2;
-						}
+				return 2;
+			}
           }
           return 1;
       }
@@ -224,11 +224,11 @@ void retrieveRecords(char* tablename,char* attribute)
   return;
 }
 
-int* removeIntDup(char* attribute,char* tablename)
+int removeIntDup(char* attribute,char* tablename,int answer[])
 {
 	int index=checkAttributeValidity(attribute,tablename);
 	if(index==-1)
-		return;
+		return -1;
 
 	char table[200];
   	memset(table,0,sizeof(table));
@@ -272,17 +272,16 @@ int* removeIntDup(char* attribute,char* tablename)
   		else
   			ans2[count2++]=ans[i];
   	}
-  	int answer[count2];
   	for(int i=0;i<count2;i++)
   		answer[i]=ans2[i];
-  	return answer;
+  	return count2;
 }
 
-char** removeStringDup(attribute,tablename)
+int removeStringDup(char* attribute,char* tablename,char answer[1000][1000])
 {
 	int index=checkAttributeValidity(attribute,tablename);
 	if(index==-1)
-		return;
+		return -1;
 
 	char table[200];
   	memset(table,0,sizeof(table));
@@ -302,7 +301,10 @@ char** removeStringDup(attribute,tablename)
 	    {
 	        if(index == j)
 	        {
-	        	arr[count++]=token;
+	        	int size=getSize(token);
+	        	for(int i=0;i<size;i++)
+	        		arr[count][i]=token[i];
+	        	count++;
 	        	break;
 	        }
 	        token = strtok(NULL,comma);
@@ -315,7 +317,7 @@ char** removeStringDup(attribute,tablename)
   		for(int j=i+1;j<count;j++)
   		{
   			char temp[1000];
-  			if (strcmp(arr[j], arr[i]) > 0) 
+  			if (strcmp(arr[j], arr[i]) < 0) 
             { 
                 strcpy(temp, arr[j]); 
                 strcpy(arr[j], arr[i]); 
@@ -323,21 +325,35 @@ char** removeStringDup(attribute,tablename)
             } 
   		}
   	}
-  	char ans[count][1000];
+  	char ans[1000][1000];
   	int count2=0;
-  	ans[count2]=arr[0];
-  	count2++;
-  	for(int i=1;i<count;i++)
+  	for(int i=0;i<count;i++)
   	{
+  		if(i==0)
+  		{
+  			int size=getSize(arr[i]);
+  			for(int k=0;k<size;k++)
+  				ans[count2][k]=arr[i][k];
+  			count2++;
+  			continue;
+  		}
   		if(strcmp(arr[i],arr[i-1])==0)
   			continue;
   		else
-  			ans[count2++]=arr[i];
+  		{
+  			int size=getSize(arr[i]);
+  			for(int k=0;k<size;k++)
+  				ans[count2][k]=arr[i][k];
+  			count2++;
+  		}
   	}
-  	char answer[count2][1000];
   	for(int i=0;i<count2;i++)
-  		answer[i]=ans[i];
-  	return answer;
+  	{
+  		int size=getSize(ans[i]);
+  		for(int k=0;k<size;k++)
+  			answer[i][k]=ans[i][k];
+  	}
+  	return count2;
 }
 
 void Duplicates(char* attribute,char* tablename)
@@ -347,12 +363,27 @@ void Duplicates(char* attribute,char* tablename)
 		return;
 	if(data_type==1)
 	{
-		int* p=removeIntDup(attribute,tablename);
+		int answer[1000];
+		int p=removeIntDup(attribute,tablename,answer);
+		for(int i=0;i<p;i++)
+			printf("%d\n",answer[i]);
 		return;
 	}
 	else
 	{
-		char** p=removeStringDup(attribute,tablename);
+		char answer[1000][1000];
+		int p=removeStringDup(attribute,tablename,answer);
+		for(int i=0;i<p;i++)
+		{
+			printf("%s\n",answer[i]);
+		}
 		return;
 	}
+}
+
+int main()
+{
+	char check[]="Research_area";
+	char table[]="prof_course";
+	Duplicates(check,table);
 }
