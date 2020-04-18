@@ -1,3 +1,4 @@
+PROJECT <Course_Type> (course);
 SELECT <Course_Type='CLASS'> (course);
 SELECT <Dept_Id=3 and Room=24 or Room=45 and Since<2000> (course);
 SELECT <Dept_Id =3 and Room=24 or Room=44> (course);
@@ -5,9 +6,8 @@ SELECT < Course_Type = 'CLASS' AND Room= 24> (course);
 SELECT <Dept_Name='CSE'> (department);
 PROJECT <Dept_Name> ( department);
 PROJECT <Course_Type, Room> (course);
-PROJECT <Course_Type> (course);
-(prof_course) cartesian_product (course);
 (prof_course) cartesian_product (department);
+(prof_course) cartesian_product (course);
 (course) equi_join <course.Course_Id=prof_course.Course_Id> (prof_course);
 (course) equi_join <course.Dept_Id=department.Dept_Id> (department);
 PROJECT <Intake> (course);

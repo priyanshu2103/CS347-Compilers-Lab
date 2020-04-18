@@ -211,6 +211,11 @@ void project_func(int count,char **project_attrs,char *tablename)
       exit(0);
     }
   }
+  if(count==1)
+  {
+    Duplicates(project_attrs[0],tablename);
+    return;
+  }
   char table[200];
   memset(table,0,sizeof(tablename));
   sprintf(table,"tables/%s.csv",tablename);
