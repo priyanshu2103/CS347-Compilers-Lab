@@ -363,7 +363,6 @@ void Duplicates(char* attribute,char* tablename)
 	int data_type=retrieveDatatype(attribute,tablename);
 	if(data_type==-1)
 		return;
-  printf("%s\n",attribute);
 	if(data_type==1)
 	{
 		int answer[1000];

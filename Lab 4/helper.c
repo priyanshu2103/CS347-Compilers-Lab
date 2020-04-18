@@ -211,6 +211,11 @@ void project_func(int count,char **project_attrs,char *tablename)
       exit(0);
     }
   }
+  for(int i=0;i<count-1;i++)
+  {
+    printf("%s,",project_attrs[i]);
+  }
+  printf("%s\n",project_attrs[count-1]);
   if(count==1)
   {
     Duplicates(project_attrs[0],tablename);
@@ -223,6 +228,9 @@ void project_func(int count,char **project_attrs,char *tablename)
   char s[1000];
   char comma[]=",";
 
+  fgets(s,sizeof(s),fp);
+  int ln=0;
+  char dup[1000][1000];
   while(fgets(s,sizeof(s),fp))
   {
     char *aux[100];
@@ -240,11 +248,13 @@ void project_func(int count,char **project_attrs,char *tablename)
           if(is_first)
           {
             is_first=false;
-            printf("%s",token);
+            sprintf(dup[ln],"%s",token);
           }
           else
           {
-            printf(",%s",token);
+            char k[1000];
+            sprintf(k,",%s",token);
+            strcat(dup[ln],k);
           }
           break;
         }
@@ -252,13 +262,60 @@ void project_func(int count,char **project_attrs,char *tablename)
       token = strtok(NULL,comma);
       j++;
     }
-    printf("\n");
+    ln++;
   }
   fclose(fp);
   if(is_empty)
   {
     printf("No rows selected\n");
+    return;
   }
+
+
+  for(int i=0;i<ln-1;i++)
+  {
+    for(int j=i+1;j<ln;j++)
+    {
+      char temp[1000];
+      if (strcmp(dup[j], dup[i]) < 0)
+      {
+          strcpy(temp, dup[j]);
+          strcpy(dup[j], dup[i]);
+          strcpy(dup[i], temp);
+      }
+    }
+  }
+
+  char ans[1000][1000];
+  memset(ans,0,sizeof(ans));
+  int count2=0;
+  for(int i=0;i<ln;i++)
+  {
+    if(i==0)
+    {
+      int size=getSize(dup[i]);
+      for(int k=0;k<size;k++)
+        ans[count2][k]=dup[i][k];
+      count2++;
+      continue;
+    }
+    if(strcmp(dup[i],dup[i-1])==0)
+      continue;
+    else
+    {
+      int size=getSize(dup[i]);
+      for(int k=0;k<size;k++)
+        ans[count2][k]=dup[i][k];
+      count2++;
+    }
+  }
+
+  int p=count2;
+  for(int i=0;i<p;i++)
+  {
+    printf("%s\n",ans[i]);
+  }
+  return;
 }
 
 // cartesian product queries
