@@ -79,14 +79,13 @@ int proj_attr_count=0;
 
 enum id_val{attribute=1,table=2};
 
-// use snprintf while printing so that we can print together at last or after each statement and not print if syntax error
 // 0 as it is
 // 1 and
 // 2 or
 // 3 not 4 <= 5 >= 6 = 7 <> 8 < 9 > 10 int 11 string
-// duplicates in project
 
-#line 90 "relational_algebra.tab.c" /* yacc.c:339  */
+
+#line 89 "relational_algebra.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -150,10 +149,10 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 25 "relational_algebra.y" /* yacc.c:355  */
+#line 24 "relational_algebra.y" /* yacc.c:355  */
 struct ast *a;int val;char * str;struct s{int id_type; char *id_name; int num_val; int str_val;} id_attributes;
 
-#line 157 "relational_algebra.tab.c" /* yacc.c:355  */
+#line 156 "relational_algebra.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -170,7 +169,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 174 "relational_algebra.tab.c" /* yacc.c:358  */
+#line 173 "relational_algebra.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -469,10 +468,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    59,    59,    60,    61,    63,    63,    73,    73,    83,
-      98,    98,   113,   118,   123,   128,   133,   145,   157,   169,
-     181,   193,   205,   217,   229,   241,   253,   265,   277,   289,
-     301,   306,   313,   312,   318,   323,   328,   333,   338
+       0,    58,    58,    59,    60,    62,    62,    72,    72,    82,
+      97,    97,   112,   117,   122,   127,   132,   144,   156,   168,
+     180,   192,   204,   216,   228,   240,   252,   264,   276,   288,
+     300,   305,   312,   311,   317,   322,   327,   332,   337
 };
 #endif
 
@@ -1289,13 +1288,13 @@ yyreduce:
   switch (yyn)
     {
         case 5:
-#line 63 "relational_algebra.y" /* yacc.c:1646  */
+#line 62 "relational_algebra.y" /* yacc.c:1646  */
     {list *select_list = create_list();global_list=select_list;}
-#line 1295 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1294 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 64 "relational_algebra.y" /* yacc.c:1646  */
+#line 63 "relational_algebra.y" /* yacc.c:1646  */
     {
          if(!tableValidity((yyvsp[-1].id_attributes).id_name))
          {
@@ -1304,17 +1303,17 @@ yyreduce:
          }
          select_func((yyvsp[-4].a),(yyvsp[-1].id_attributes).id_name,global_list);
        }
-#line 1308 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1307 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 73 "relational_algebra.y" /* yacc.c:1646  */
+#line 72 "relational_algebra.y" /* yacc.c:1646  */
     {proj_attr_count=0;}
-#line 1314 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1313 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 74 "relational_algebra.y" /* yacc.c:1646  */
+#line 73 "relational_algebra.y" /* yacc.c:1646  */
     {
          if(!tableValidity((yyvsp[-1].id_attributes).id_name))
          {
@@ -1323,11 +1322,11 @@ yyreduce:
          }
          project_func(proj_attr_count,project_attrs,(yyvsp[-1].id_attributes).id_name);
        }
-#line 1327 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1326 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 84 "relational_algebra.y" /* yacc.c:1646  */
+#line 83 "relational_algebra.y" /* yacc.c:1646  */
     {
          if(!tableValidity((yyvsp[-5].id_attributes).id_name))
          {
@@ -1341,17 +1340,17 @@ yyreduce:
          }
          cartesian_product_func((yyvsp[-5].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name);
        }
-#line 1345 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1344 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 98 "relational_algebra.y" /* yacc.c:1646  */
+#line 97 "relational_algebra.y" /* yacc.c:1646  */
     {list *equi_join_list = create_list();global_list=equi_join_list;}
-#line 1351 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1350 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 99 "relational_algebra.y" /* yacc.c:1646  */
+#line 98 "relational_algebra.y" /* yacc.c:1646  */
     {
          if(!tableValidity((yyvsp[-9].id_attributes).id_name))
          {
@@ -1365,43 +1364,43 @@ yyreduce:
          }
          equi_join_func((yyvsp[-4].a),(yyvsp[-9].id_attributes).id_name,(yyvsp[-1].id_attributes).id_name,global_list);
        }
-#line 1369 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1368 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 114 "relational_algebra.y" /* yacc.c:1646  */
+#line 113 "relational_algebra.y" /* yacc.c:1646  */
     {
          (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);
        }
-#line 1377 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1376 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 119 "relational_algebra.y" /* yacc.c:1646  */
+#line 118 "relational_algebra.y" /* yacc.c:1646  */
     {
          (yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));
        }
-#line 1385 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1384 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 124 "relational_algebra.y" /* yacc.c:1646  */
+#line 123 "relational_algebra.y" /* yacc.c:1646  */
     {
               (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);
            }
-#line 1393 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1392 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 129 "relational_algebra.y" /* yacc.c:1646  */
+#line 128 "relational_algebra.y" /* yacc.c:1646  */
     {
               (yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));
            }
-#line 1401 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1400 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 134 "relational_algebra.y" /* yacc.c:1646  */
+#line 133 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1412,11 +1411,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1416 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1415 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 146 "relational_algebra.y" /* yacc.c:1646  */
+#line 145 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1427,11 +1426,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1431 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1430 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 158 "relational_algebra.y" /* yacc.c:1646  */
+#line 157 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1442,11 +1441,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1446 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1445 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 170 "relational_algebra.y" /* yacc.c:1646  */
+#line 169 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1457,11 +1456,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1461 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1460 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 182 "relational_algebra.y" /* yacc.c:1646  */
+#line 181 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1472,11 +1471,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1476 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1475 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 194 "relational_algebra.y" /* yacc.c:1646  */
+#line 193 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1487,11 +1486,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1491 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1490 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 206 "relational_algebra.y" /* yacc.c:1646  */
+#line 205 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name);
           struct ast *temp2=new_str((yyvsp[-1].id_attributes).id_name);
@@ -1502,11 +1501,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1506 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1505 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 218 "relational_algebra.y" /* yacc.c:1646  */
+#line 217 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1517,11 +1516,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1521 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1520 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 230 "relational_algebra.y" /* yacc.c:1646  */
+#line 229 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1532,11 +1531,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1536 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1535 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 242 "relational_algebra.y" /* yacc.c:1646  */
+#line 241 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-4].id_attributes).id_name);
           struct ast *temp2=new_str((yyvsp[-1].id_attributes).id_name);
@@ -1547,11 +1546,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1551 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1550 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 254 "relational_algebra.y" /* yacc.c:1646  */
+#line 253 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1562,11 +1561,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1566 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1565 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 266 "relational_algebra.y" /* yacc.c:1646  */
+#line 265 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1577,11 +1576,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1581 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1580 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 278 "relational_algebra.y" /* yacc.c:1646  */
+#line 277 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_var((yyvsp[0].id_attributes).id_name);
@@ -1592,11 +1591,11 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1596 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1595 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 290 "relational_algebra.y" /* yacc.c:1646  */
+#line 289 "relational_algebra.y" /* yacc.c:1646  */
     {
           struct ast *temp1=new_var((yyvsp[-2].id_attributes).id_name);
           struct ast *temp2=new_num((yyvsp[0].val));
@@ -1607,69 +1606,69 @@ yyreduce:
           list_pushback(global_list,v1);
           list_pushback(global_list,v2);
        }
-#line 1611 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1610 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 302 "relational_algebra.y" /* yacc.c:1646  */
+#line 301 "relational_algebra.y" /* yacc.c:1646  */
     {
           (yyval.a)=new_ast(3,(yyvsp[0].a),NULL);
        }
-#line 1619 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1618 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 307 "relational_algebra.y" /* yacc.c:1646  */
+#line 306 "relational_algebra.y" /* yacc.c:1646  */
     {
                 project_attrs[proj_attr_count]=(yyvsp[0].id_attributes).id_name;
                 proj_attr_count++;
             }
-#line 1628 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1627 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 313 "relational_algebra.y" /* yacc.c:1646  */
+#line 312 "relational_algebra.y" /* yacc.c:1646  */
     {
                 project_attrs[proj_attr_count]=(yyvsp[0].id_attributes).id_name;
                 proj_attr_count++;
             }
-#line 1637 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1636 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 319 "relational_algebra.y" /* yacc.c:1646  */
+#line 318 "relational_algebra.y" /* yacc.c:1646  */
     {
               (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);
            }
-#line 1645 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1644 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 324 "relational_algebra.y" /* yacc.c:1646  */
+#line 323 "relational_algebra.y" /* yacc.c:1646  */
     {
               (yyval.a)=new_ast(2,(yyvsp[-2].a),(yyvsp[0].a));
            }
-#line 1653 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1652 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 329 "relational_algebra.y" /* yacc.c:1646  */
+#line 328 "relational_algebra.y" /* yacc.c:1646  */
     {
                   (yyval.a)=new_ast(0,(yyvsp[0].a),NULL);
                }
-#line 1661 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1660 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 334 "relational_algebra.y" /* yacc.c:1646  */
+#line 333 "relational_algebra.y" /* yacc.c:1646  */
     {
                   (yyval.a)=new_ast(1,(yyvsp[-2].a),(yyvsp[0].a));
                }
-#line 1669 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1668 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 339 "relational_algebra.y" /* yacc.c:1646  */
+#line 338 "relational_algebra.y" /* yacc.c:1646  */
     {
               if(!tableValidity((yyvsp[-6].id_attributes).id_name))
               {
@@ -1703,11 +1702,11 @@ yyreduce:
               list_pushback(global_list,v1);
               list_pushback(global_list,v2);
            }
-#line 1707 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1706 "relational_algebra.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1711 "relational_algebra.tab.c" /* yacc.c:1646  */
+#line 1710 "relational_algebra.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1935,7 +1934,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 373 "relational_algebra.y" /* yacc.c:1906  */
+#line 372 "relational_algebra.y" /* yacc.c:1906  */
 
 
 int main()
