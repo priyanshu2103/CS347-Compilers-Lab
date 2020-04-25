@@ -87,8 +87,8 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 13 "c_comp.y" /* yacc.c:1909  */
-int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes;
+#line 51 "c_comp.y" /* yacc.c:1909  */
+int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; func_call_details * f_attributes;
 
 #line 94 "c_comp.tab.h" /* yacc.c:1909  */
 };

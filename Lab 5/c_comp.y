@@ -44,7 +44,7 @@ vector <func_arg *> func_arg_list;
 
 stack <func_call_details *> func_stack;
 func_call_details *fc_temp;
-
+int decl_type_check;
 // f_type 0 void 1 int 2 float
 %}
 
@@ -85,14 +85,12 @@ func_call_details *fc_temp;
 %token BREAK
 %token DEFAULT
 
-%type <ival> int_assign;
-%type <ival> int_id_assign_list;
-%type <ival> int_arith;
-%type <ival> int_arith_arg;
-%type <fval> float_assign;
-%type <fval> float_id_assign_list;
-%type <fval> float_arith;
-%type <fval> float_arith_arg;
+%type <id_attributes> assign;
+%type <id_attributes> id_assign_list;
+
+%type <id_attributes> arith_expr;
+%type <id_attributes> arith_arg;
+
 %type <f_attributes> func_call;
 %type <f_attributes> func_decl;
 %type <f_attributes> func_def;
@@ -105,55 +103,48 @@ stmt : stmt_wo_func | stmt_with_func;
 stmt_wo_func : var_decl | arith | func_call SEMI  | switch_case | for_loop | while_loop;
 stmt_with_func : func_decl | func_def;
 
-var_decl : INT_DECL int_id_list | FLOAT_DECL float_id_list;
+var_decl : INT_DECL {decl_type_check=1;} id_list | FLOAT_DECL {decl_type_check=2;} id_list;
 
-int_id_list : int_assign SEMI | int_assign COMMA int_id_list;
-int_assign : ID {$$ = $1.i_val;}| ID EQ int_id_assign_list {$1.i_val=$3; $$=$1.i_val;}; // here check variable does or does not already exist
-int_id_assign_list : ID {$$ = $1.i_val;}| ID EQ INT {$1.i_val=$3; $$=$1.i_val;}| ID EQ int_arith {$1.i_val=$3; $$=$1.i_val;}| ID EQ func_call {if($3.f_type!=1) {cout<< "error\n"; exit(0);} $1.i_val=$3.i_val; $$=$1.i_val;}| ID EQ int_id_assign_list{$1.i_val=$3; $$=$1.i_val;};
+id_list : assign SEMI {if($1.id_type!=decl_type_check) {cout<<"typE mismatch\n"; exit(0);}}| assign COMMA id_list {if($1.id_type!=decl_type_check) {cout<<"typE mismatch\n"; exit(0);}};
+assign : ID {$$.id_type = $1.id_type = decl_type_check;}| ID EQ id_assign_list {$1.id_type=decl_type_check; if($1.id_type!=$3.id_type) {cout<<"tYPe mismatch\n"; exit(0);} $$.id_type = $1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val=$3.i_val;} else {$$.f_val=$1.f_val=$3.f_val;}}; // here check variable does or does not already exist also assign it's values only if it exists
+id_assign_list : ID {$$.id_type = $1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val;} else {$$.f_val=$1.f_val;}}| ID EQ INT {if($1.id_type!=1) {cout<<"TYpe mismatch\n"; exit(0);} $1.i_val=$3; $$.id_type=1; $$.i_val=$1.i_val;}| ID EQ FLOAT {if($1.id_type!=2) {cout<<"TYpe mismatch\n"; exit(0);} $1.f_val=$3; $$.id_type=2; $$.f_val=$1.f_val;}| ID EQ arith_expr {if($1.id_type!=$3.id_type) {cout<<"tyPe mismatch\n"; exit(0);} $$.id_type=$1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val=$3.i_val;} else {$$.f_val=$1.f_val=$3.f_val;}}| ID EQ func_call {if($1.id_type!=$3->f_type) {cout<<"tyPe mismatch\n"; exit(0);} $$.id_type=$1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val=$3->i_val;} else {$$.f_val=$1.f_val=$3->f_val;}}| ID EQ id_assign_list {if($1.id_type!=$3.id_type) {cout<<"tyPe mismatch\n"; exit(0);} $$.id_type=$1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val=$3.i_val;} else {$$.f_val=$1.f_val=$3.f_val;}};
 
-float_id_list : float_assign SEMI | float_assign COMMA float_id_list;
-float_assign : ID {$$ = $1.f_val;}| ID EQ float_id_assign_list {$1.f_val=$3; $$=$1.f_val;};
-float_id_assign_list : ID {$$ = $1.f_val;}| ID EQ FLOAT {$1.f_val=$3; $$=$1.f_val;}| ID EQ float_arith {$1.f_val=$3; $$=$1.f_val;}| ID EQ func_call {if($3.f_type!=2) {cout<< "error\n"; exit(0);} $1.f_val=$3.f_val; $$=$1.f_val;}| ID EQ float_id_assign_list {$1.f_val=$3; $$=$1.f_val;};
+arith : arith_expr SEMI;
 
-arith : int_arith SEMI | float_arith SEMI;
+arith_expr : arith_arg PLUS arith_arg {if($1.id_type!=$3.id_type) {cout<<"Type mismatch\n"; exit(0);} if($1.id_type==1) {$$.i_val=$1.i_val + $3.i_val;} else {$$.f_val=$1.f_val + $3.f_val;}}| arith_arg MINUS arith_arg {if($1.id_type!=$3.id_type) {cout<<"Type mismatch\n"; exit(0);} if($1.id_type==1) {$$.i_val=$1.i_val + $3.i_val;} else {$$.f_val=$1.f_val + $3.f_val;}}| arith_arg MULT arith_arg {if($1.id_type!=$3.id_type) {cout<<"Type mismatch\n"; exit(0);} if($1.id_type==1) {$$.i_val=$1.i_val + $3.i_val;} else {$$.f_val=$1.f_val + $3.f_val;}}| arith_arg DIV arith_arg {if($1.id_type!=$3.id_type) {cout<<"Type mismatch\n"; exit(0);} if($1.id_type==1) {$$.i_val=$1.i_val + $3.i_val;} else {$$.f_val=$1.f_val + $3.f_val;}};
+arith_arg : ID {$$.id_type=$1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val;} else {$$.f_val=$1.f_val;}}| INT {$$.id_type=1; $$.i_val=$1;}| FLOAT {$$.id_type=2; $$.f_val=$1;}| arith_expr {$$.id_type=$1.id_type; if($1.id_type==1) {$$.i_val=$1.i_val;} else {$$.f_val=$1.f_val;}}| func_call {$$.id_type=$1->f_type; if($$.id_type==1) {$$.i_val=$1->i_val;} else {$$.f_val=$1->f_val;}}| LP arith_expr RP {$$.id_type = $2.id_type; if($2.id_type==1) {$$.i_val=$2.i_val;} else {$$.f_val=$2.f_val;}}; // check div by 0 and type of func_call
 
-int_arith : int_arith_arg PLUS int_arith_arg {$$=$1 + $3;}| int_arith_arg MINUS int_arith_arg {$$=$1 - $3;}| int_arith_arg MULT int_arith_arg {$$=$1 * $3;}| int_arith_arg DIV int_arith_arg {$$=$1 / $3;};
-int_arith_arg : ID {$$=$1.i_val;}| INT {$$=$1;}| int_arith {$$=$1;}| func_call {if($1->f_type!=1) {cout<< "type error\n"; exit(0);} $$=$1->i_val;}| LP int_arith RP; {$$ = $2;}// check div by 0 and type of func_call
-
-float_arith : float_arith_arg PLUS float_arith_arg {$$=$1 + $3;}| float_arith_arg MINUS float_arith_arg {$$=$1 - $3;}| float_arith_arg MULT float_arith_arg {$$=$1 * $3;}| float_arith_arg DIV float_arith_arg {$$=$1 / $3;};
-float_arith_arg : ID {$$=$1.f_val;}| FLOAT {$$=$1;}| float_arith {$$=$1;}| func_call {if($1->f_type!=2) {cout<< "type error\n"; exit(0);} $$=$1->f_val;}| LP float_arith RP; {$$ = $2;}// check div by 0 and type of func_call
-
-func_call : ID {func_call_details * fc= get_func_details($1.id_name); arg_no= fc->n_args; func_arg_list= fc->args; check_arg_no=0; $$->f_type=fc->f_type;} LP call_arg_list RP {if($$->f_type==1) {$$->i_val = eval_int_func($1.id_name)} else if($$->f_type==2) {$$->f_val = eval_float_func($1.id_name)} else {eval_void_func($1.id_name)}};
-call_arg_list : call_arg | call_arg COMMA call_arg_list;
+func_call : ID {func_call_details * fc= get_func_details($1.id_name); arg_no= fc->n_args; func_arg_list= fc->args; check_arg_no=0; $<f_attributes>$->f_type=fc->f_type;} LP call_arg_list RP {if($$->f_type==1) {$$->i_val = eval_int_func($1.id_name)} else if($$->f_type==2) {$$->f_val = eval_float_func($1.id_name)} else {eval_void_func($1.id_name)}};
+call_arg_list : /* empty */ | call_arg | call_arg COMMA call_arg_list;
 call_arg : ID {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != $1.id_type) {cout<<"type mismatch while calling\n"; exit(0);} if(fa->arg_type==1) {fa->i_val=$1.i_val;} else {fa->f_val=$1.f_val;}}|
            INT {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != 1) {cout<<"type mismatch while calling\n"; exit(0);} fa->i_val=$1;}|
            FLOAT {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != 2) {cout<<"type mismatch while calling\n"; exit(0);} fa->f_val=$1;};     // here variable scope part is left, also can use convert_int_to_float if want to allow typecast
 
-func_decl : VOID ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);} |
-            INT_DECL ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);} |
-            FLOAT_DECL ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);};
-decl_arg_list : decl_arg | decl_arg COMMA decl_arg_list;
+func_decl : VOID ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);} |
+            INT_DECL ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);} |
+            FLOAT_DECL ID {func_call_details * fc= get_func_details($2.id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP decl_arg_list RP SEMI {$$->args=func_arg_list; $$->n_args=arg_no; func_list.push_back($$);};
+decl_arg_list : /* empty */ | decl_arg | decl_arg COMMA decl_arg_list;
 decl_arg : INT_DECL {func_arg * fa=new func_arg(); fa->arg_type=1; func_arg_list[arg_no++]= fa;}| FLOAT_DECL {func_arg * fa=new func_arg(); fa->arg_type=2; func_arg_list[arg_no++]= fa;}| INT_DECL ID {func_arg * fa=new func_arg(); fa->arg_type=1; func_arg_list[arg_no++]= fa;}| FLOAT_DECL ID {func_arg * fa=new func_arg(); fa->arg_type=2; func_arg_list[arg_no++]= fa;};  // can't set name as it can be different during definition
 
-func_def : VOID ID {func_call_details * fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP stmt_wo_func
+func_def : VOID ID {func_call_details * fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP stmt_wo_func
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);}|
 
-           VOID ID {func_call_details * fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP LC body RC
+           VOID ID {func_call_details * fc=new func_call_details(); fc->f_type=0; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP LC body RC
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);}|
 
-           INT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP stmt_wo_func
+           INT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP stmt_wo_func
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);}|
 
-           INT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP LC body RC
+           INT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=1; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP LC body RC
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);}|
 
-           FLOAT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP stmt_wo_func
+           FLOAT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP stmt_wo_func
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);}|
 
-           FLOAT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $$=fc;} LP def_arg_list RP LC body RC
+           FLOAT_DECL ID {func_call_details * fc=new func_call_details(); fc->f_type=2; fc->f_name=$2.id_name; arg_no=0; vector<func_arg *> templist; func_arg_list=templist; $<f_attributes>$=fc;} LP def_arg_list RP LC body RC
            {$$->args=func_arg_list; $$->n_args=arg_no; func_call_details *fc1= get_func_details($$->f_name); if(fc1) {if(fc1->f_type != $$->f_type || fc1->n_args !=$$->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=$$->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back($$);};
 
-def_arg_list : def_arg | def_arg COMMA def_arg_list;
+def_arg_list : /* empty */ | def_arg | def_arg COMMA def_arg_list;
 def_arg : INT_DECL ID {func_arg * fa=new func_arg(); fa->arg_type=1; fa->arg_name=$2.id_name; func_arg_list[arg_no++]= fa;}| FLOAT_DECL ID {func_arg * fa=new func_arg(); fa->arg_type=2; fa->arg_name=$2.id_name; func_arg_list[arg_no++]= fa;};  // see no ID name is repeated in this list, can use unordered_map
 
 body : stmt_wo_func | stmt_wo_func body;
@@ -171,8 +162,7 @@ cond : and_expr | and_expr OR cond;
 
 and_expr : expr | expr AND and_expr;
 
-expr : int_arith_arg LT int_arith_arg | int_arith_arg GT int_arith_arg | int_arith_arg LE int_arith_arg | int_arith_arg GE int_arith_arg | int_arith_arg EQ EQ int_arith_arg | int_arith_arg NEQ int_arith_arg |
-       float_arith_arg LT float_arith_arg | float_arith_arg GT float_arith_arg | float_arith_arg LE float_arith_arg | float_arith_arg GE float_arith_arg | float_arith_arg EQ EQ float_arith_arg | float_arith_arg NEQ float_arith_arg |
+expr : arith_expr LT arith_expr | arith_expr GT arith_expr | arith_expr LE arith_expr | arith_expr GE arith_expr | arith_expr EQ EQ arith_expr | arith_expr NEQ arith_expr |
        EXCL cond;
 
 switch_case : SWITCH ID COL LC cases RC | SWITCH LP ID RP LC cases RC;
@@ -185,9 +175,9 @@ break : /* empty */ | BREAK SEMI;
 
 for_loop : FOR LP for_expr RP stmt_wo_func | FOR LP for_expr RP LC body RC;
 for_expr : for_first for_second for_third;
-for_first : /* empty */ | var_decl | int_id_list | float_id_list;
+for_first : /* empty */ | var_decl | id_list;
 for_second : /* empty */ | cond SEMI;
-for_third : /* empty */ | ID EQ int_id_assign_list | ID EQ float_id_assign_list;             // not included i++ types
+for_third : /* empty */ | ID EQ id_assign_list;             // not included i++ types
 
 while_loop : WHILE LP cond RP stmt_wo_func | WHILE LP cond RP LC body RC;
 
