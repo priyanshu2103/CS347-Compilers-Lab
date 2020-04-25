@@ -1,7 +1,8 @@
 # include <stdio.h>
+void f(int k);
 void f(int l)
 {
-  int l=5;
+  l=5;
   printf("%d\n",l);
 }
 int main()
