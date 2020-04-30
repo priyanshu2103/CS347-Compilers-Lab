@@ -18,6 +18,7 @@ b   [ ]*
 {b}"-"{b}                                               {return MINUS;}
 {b}"*"{b}                                               {return MULT;}
 {b}"/"{b}                                               {return DIV;}
+{b}"%"{b}                                               {return MOD;}
 {b}"<="{b}                                              {return LE;}
 {b}">="{b}                                              {return GE;}
 {b}"="{b}                                               {return EQ;}

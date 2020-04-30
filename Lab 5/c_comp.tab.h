@@ -39,6 +39,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 38 "c_comp.y" /* yacc.c:1909  */
+
+  #include "helper.h"
+
+#line 48 "c_comp.tab.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -49,36 +55,37 @@ extern int yydebug;
     MINUS = 259,
     MULT = 260,
     DIV = 261,
-    LE = 262,
-    GE = 263,
-    EQ = 264,
-    NEQ = 265,
-    LT = 266,
-    GT = 267,
-    AND = 268,
-    OR = 269,
-    EXCL = 270,
-    COMMA = 271,
-    COL = 272,
-    SEMI = 273,
-    LC = 274,
-    RC = 275,
-    LP = 276,
-    RP = 277,
-    VOID = 278,
-    INT_DECL = 279,
-    FLOAT_DECL = 280,
-    ID = 281,
-    INT = 282,
-    FLOAT = 283,
-    IF = 284,
-    ELSE = 285,
-    SWITCH = 286,
-    CASE = 287,
-    FOR = 288,
-    WHILE = 289,
-    BREAK = 290,
-    DEFAULT = 291
+    MOD = 262,
+    LE = 263,
+    GE = 264,
+    EQ = 265,
+    NEQ = 266,
+    LT = 267,
+    GT = 268,
+    AND = 269,
+    OR = 270,
+    EXCL = 271,
+    COMMA = 272,
+    COL = 273,
+    SEMI = 274,
+    LC = 275,
+    RC = 276,
+    LP = 277,
+    RP = 278,
+    VOID = 279,
+    INT_DECL = 280,
+    FLOAT_DECL = 281,
+    ID = 282,
+    INT = 283,
+    FLOAT = 284,
+    IF = 285,
+    ELSE = 286,
+    SWITCH = 287,
+    CASE = 288,
+    FOR = 289,
+    WHILE = 290,
+    BREAK = 291,
+    DEFAULT = 292
   };
 #endif
 
@@ -87,10 +94,10 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 51 "c_comp.y" /* yacc.c:1909  */
-int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; func_call_details * f_attributes;
+#line 42 "c_comp.y" /* yacc.c:1909  */
+int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; struct func_call_details * f_attributes;
 
-#line 94 "c_comp.tab.h" /* yacc.c:1909  */
+#line 101 "c_comp.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
