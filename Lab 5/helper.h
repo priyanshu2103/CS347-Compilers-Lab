@@ -17,7 +17,7 @@ typedef struct func_arg
 
 typedef struct func_call_details
 {
-  int f_type;
+  int f_type;   // 0 for void, 1 for int, 2 for float
   char *f_name;
   int i_val;
   float f_val;
