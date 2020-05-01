@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 38 "c_comp.y" /* yacc.c:1909  */
+#line 40 "c_comp.y" /* yacc.c:1909  */
 
   #include "helper.h"
 
@@ -94,7 +94,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 42 "c_comp.y" /* yacc.c:1909  */
+#line 44 "c_comp.y" /* yacc.c:1909  */
 int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; struct func_call_details * f_attributes;
 
 #line 101 "c_comp.tab.h" /* yacc.c:1909  */

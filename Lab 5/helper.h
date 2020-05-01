@@ -24,3 +24,10 @@ typedef struct func_call_details
   int n_args;
   vector <func_arg *> args;
 } func_call_details;
+
+typedef struct scope
+{
+  int is_func;
+  func_call_details * fc;
+  vector<func_arg *> variables;   // variables have a name, type and value, so using func_arg struct itself
+} scope;
