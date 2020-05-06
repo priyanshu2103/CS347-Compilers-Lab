@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_C_COMP_TAB_H_INCLUDED
-# define YY_YY_C_COMP_TAB_H_INCLUDED
+#ifndef YY_YY_MINIC_TAB_H_INCLUDED
+# define YY_YY_MINIC_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -40,52 +40,75 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 40 "c_comp.y" /* yacc.c:1909  */
+#line 39 "miniC.y" /* yacc.c:1909  */
 
-  #include "helper.h"
+    #include "codegenHelpers.h"
 
-#line 48 "c_comp.tab.h" /* yacc.c:1909  */
+#line 48 "miniC.tab.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    PLUS = 258,
-    MINUS = 259,
-    MULT = 260,
-    DIV = 261,
-    MOD = 262,
-    LE = 263,
-    GE = 264,
-    EQ = 265,
-    NEQ = 266,
-    LT = 267,
-    GT = 268,
-    AND = 269,
-    OR = 270,
-    EXCL = 271,
-    COMMA = 272,
-    COL = 273,
-    SEMI = 274,
-    LC = 275,
-    RC = 276,
-    LP = 277,
-    RP = 278,
-    VOID = 279,
-    INT_DECL = 280,
-    FLOAT_DECL = 281,
-    ID = 282,
-    INT = 283,
-    FLOAT = 284,
-    IF = 285,
-    ELSE = 286,
-    SWITCH = 287,
-    CASE = 288,
-    FOR = 289,
-    WHILE = 290,
-    BREAK = 291,
-    DEFAULT = 292
+    INT = 258,
+    FLOAT = 259,
+    VOID = 260,
+    NUMFLOAT = 261,
+    NUMINT = 262,
+    ID = 263,
+    NEWLINE = 264,
+    READ = 265,
+    PRINT = 266,
+    COLON = 267,
+    QUESTION = 268,
+    DOT = 269,
+    LCB = 270,
+    RCB = 271,
+    LSB = 272,
+    RSB = 273,
+    LP = 274,
+    RP = 275,
+    SEMI = 276,
+    COMMA = 277,
+    ASSIGN = 278,
+    IF = 279,
+    ELSE = 280,
+    CASE = 281,
+    BREAK = 282,
+    DEFAULT = 283,
+    CONTINUE = 284,
+    WHILE = 285,
+    FOR = 286,
+    RETURN = 287,
+    SWITCH = 288,
+    MAIN = 289,
+    LSHIFT = 290,
+    RSHIFT = 291,
+    PLUSASG = 292,
+    MINASG = 293,
+    MULASG = 294,
+    MODASG = 295,
+    DIVASG = 296,
+    INCREMENT = 297,
+    DECREMENT = 298,
+    XOR = 299,
+    BITAND = 300,
+    BITOR = 301,
+    PLUS = 302,
+    MINUS = 303,
+    DIV = 304,
+    MUL = 305,
+    MOD = 306,
+    NOT = 307,
+    AND = 308,
+    OR = 309,
+    LT = 310,
+    GT = 311,
+    LE = 312,
+    GE = 313,
+    EQUAL = 314,
+    NOTEQUAL = 315
   };
 #endif
 
@@ -94,10 +117,22 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 44 "c_comp.y" /* yacc.c:1909  */
-int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; struct func_call_details * f_attributes;
+#line 43 "miniC.y" /* yacc.c:1909  */
 
-#line 101 "c_comp.tab.h" /* yacc.c:1909  */
+    float floatval;
+    int intval;
+    char *idName;
+    int quad;
+
+    struct expression expr;
+    struct stmt stmtval;
+    struct switchcaser switchCase;
+    struct switchtemp switchTemp;
+    struct whileexp whileexpval;
+    struct shortcircuit shortCircuit;
+    struct condition2temp ctemp;
+
+#line 136 "miniC.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -110,4 +145,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_C_COMP_TAB_H_INCLUDED  */
+#endif /* !YY_YY_MINIC_TAB_H_INCLUDED  */

@@ -62,45 +62,37 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "c_comp.y" /* yacc.c:339  */
+#line 1 "inter.y" /* yacc.c:339  */
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #include <iostream>
-#include <cstdlib>
 #include <vector>
 #include <stack>
 #include <stdio.h>
-#include "c_comp.tab.h"
-#include "helper.h"
+#include <fstream>
+#include "symTabParser.h"
 using namespace std;
-#define YYERROR_VERBOSE 1
 
-extern int yylex(void);
-extern void yyterminate();
-void yyerror(const char *s);
-int eval_int_func(char *f_name);
-float eval_float_func(char *f_name);
-void eval_void_func(char *f_name);
-func_call_details * get_func_details(char *);
-void eval_func();
+#define INTSIZE 4
+#define FLOATSIZE 4
 
+extern int yylex();
+extern int yyparse();
+extern int yylineno;
+extern char* yytext;
+extern int yyleng;
+void yyerror(char* s);
 
-vector <func_call_details *> func_list;
+FILE *mips;
+string actFunc, retVal;
+int parOffset, ftLabel = 0;
+vector<funcEntry> funcLst;
+vector<typeRecord> gblVars;
+void saveRegisters(int frameSize);
+void retrieveRegisters(int frameSize);  
+bool isGlobal;  
 
-int arg_no;
-int check_arg_no;
-vector <func_arg *> func_arg_list;
-// the above 3 won't work in multiple func calls, need to keep a stack of these as well
-// need to add print statement to see results
-// add remainder (%) in arith
-stack <func_call_details *> func_stack;
-func_call_details *fc_temp;
-int decl_type_check;
-
-stack <scope *> scope_stack;
-// f_type 0 void 1 int 2 float
-
-#line 104 "c_comp.tab.c" /* yacc.c:339  */
+#line 96 "inter.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -119,9 +111,9 @@ stack <scope *> scope_stack;
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "c_comp.tab.h".  */
-#ifndef YY_YY_C_COMP_TAB_H_INCLUDED
-# define YY_YY_C_COMP_TAB_H_INCLUDED
+   by #include "inter.tab.h".  */
+#ifndef YY_YY_INTER_TAB_H_INCLUDED
+# define YY_YY_INTER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -129,53 +121,54 @@ stack <scope *> scope_stack;
 #if YYDEBUG
 extern int yydebug;
 #endif
-/* "%code requires" blocks.  */
-#line 40 "c_comp.y" /* yacc.c:355  */
-
-  #include "helper.h"
-
-#line 138 "c_comp.tab.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    PLUS = 258,
-    MINUS = 259,
-    MULT = 260,
-    DIV = 261,
-    MOD = 262,
-    LE = 263,
-    GE = 264,
-    EQ = 265,
-    NEQ = 266,
-    LT = 267,
-    GT = 268,
-    AND = 269,
-    OR = 270,
-    EXCL = 271,
-    COMMA = 272,
-    COL = 273,
-    SEMI = 274,
-    LC = 275,
-    RC = 276,
-    LP = 277,
-    RP = 278,
-    VOID = 279,
-    INT_DECL = 280,
-    FLOAT_DECL = 281,
-    ID = 282,
-    INT = 283,
-    FLOAT = 284,
-    IF = 285,
-    ELSE = 286,
-    SWITCH = 287,
-    CASE = 288,
-    FOR = 289,
-    WHILE = 290,
-    BREAK = 291,
-    DEFAULT = 292
+    FUNCTION = 258,
+    BEG = 259,
+    END = 260,
+    IF = 261,
+    GOTO = 262,
+    PARAM = 263,
+    REFPARAM = 264,
+    CALL = 265,
+    LSB = 266,
+    RSB = 267,
+    RETURN = 268,
+    NEWLINE = 269,
+    CONVERTINT = 270,
+    CONVERTFLOAT = 271,
+    LP = 272,
+    RP = 273,
+    USERVAR = 274,
+    REGINT = 275,
+    REGFLOAT = 276,
+    LABEL = 277,
+    NUMINT = 278,
+    NUMFLOAT = 279,
+    PRINT = 280,
+    READ = 281,
+    COMMA = 282,
+    COLON = 283,
+    SEMI = 284,
+    PLUS = 285,
+    MINUS = 286,
+    MUL = 287,
+    DIV = 288,
+    MOD = 289,
+    EQUAL = 290,
+    NOTEQUAL = 291,
+    OR = 292,
+    AND = 293,
+    LT = 294,
+    GT = 295,
+    LE = 296,
+    GE = 297,
+    ASSIGN = 298,
+    NEG = 299
   };
 #endif
 
@@ -184,10 +177,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 44 "c_comp.y" /* yacc.c:355  */
-int ival ; float fval; char * str; struct s{int id_type; char *id_name; int i_val; float f_val;} id_attributes; struct func_call_details * f_attributes;
+#line 31 "inter.y" /* yacc.c:355  */
 
-#line 191 "c_comp.tab.c" /* yacc.c:355  */
+    int intval;
+    float floatval;
+    char *idName;
+
+#line 187 "inter.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -200,11 +196,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_C_COMP_TAB_H_INCLUDED  */
+#endif /* !YY_YY_INTER_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 208 "c_comp.tab.c" /* yacc.c:358  */
+#line 204 "inter.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -444,23 +440,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  38
+#define YYFINAL  40
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   259
+#define YYLAST   177
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  38
+#define YYNTOKENS  45
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  43
+#define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  103
+#define YYNRULES  74
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  197
+#define YYNSTATES  162
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   292
+#define YYMAXUTOK   299
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -498,24 +494,21 @@ static const yytype_uint8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    96,    96,    96,    97,    97,    99,    99,    99,    99,
-      99,    99,   100,   100,   100,   101,   101,   103,   105,   105,
-     107,   107,   107,   107,   109,   109,   110,   110,   111,   112,
-     113,   114,   115,   116,   118,   119,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,   131,   131,   131,   131,
-     131,   133,   133,   134,   134,   134,   135,   136,   137,   139,
-     146,   163,   163,   163,   164,   164,   165,   165,   167,   167,
-     168,   168,   179,   179,   181,   181,   183,   186,   186,   188,
-     188,   189,   189,   189,   189,   190,   190,   190,   190,   191,
-     191,   191,   192,   192,   194,   195,   196,   196,   196,   197,
-     197,   198,   198,   200
+       0,    48,    48,    49,    52,    53,    54,    58,    62,    63,
+      69,    76,    80,    84,   103,   113,   123,   127,   132,   138,
+     147,   156,   162,   171,   180,   186,   202,   211,   227,   232,
+     236,   240,   245,   249,   253,   257,   261,   265,   270,   275,
+     279,   283,   289,   293,   297,   301,   305,   311,   320,   325,
+     341,   350,   364,   369,   373,   377,   381,   385,   389,   393,
+     402,   411,   423,   435,   444,   453,   462,   473,   477,   481,
+     485,   489,   499,   509,   521
 };
 #endif
 
@@ -524,18 +517,13 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "PLUS", "MINUS", "MULT", "DIV", "MOD",
-  "LE", "GE", "EQ", "NEQ", "LT", "GT", "AND", "OR", "EXCL", "COMMA", "COL",
-  "SEMI", "LC", "RC", "LP", "RP", "VOID", "INT_DECL", "FLOAT_DECL", "ID",
-  "INT", "FLOAT", "IF", "ELSE", "SWITCH", "CASE", "FOR", "WHILE", "BREAK",
-  "DEFAULT", "$accept", "stmts", "stmt", "stmt_wo_func", "stmt_with_func",
-  "var_or_func", "type", "var_decl", "$@1", "$@2", "id_list", "assign",
-  "id_assign_list", "non_decl_assgn", "arith", "arith_expr", "arith_arg",
-  "func_call", "@3", "call_arg_list", "call_arg", "func_decl", "func_def",
-  "def_arg_temp", "$@4", "def_arg_list", "def_arg", "func_def_aux", "body",
-  "cond", "and_expr", "expr", "switch_case", "cases", "case", "default",
-  "break", "for_loop", "for_expr", "for_first", "for_second", "for_third",
-  "while_loop", YY_NULLPTR
+  "$end", "error", "$undefined", "FUNCTION", "BEG", "END", "IF", "GOTO",
+  "PARAM", "REFPARAM", "CALL", "LSB", "RSB", "RETURN", "NEWLINE",
+  "CONVERTINT", "CONVERTFLOAT", "LP", "RP", "USERVAR", "REGINT",
+  "REGFLOAT", "LABEL", "NUMINT", "NUMFLOAT", "PRINT", "READ", "COMMA",
+  "COLON", "SEMI", "PLUS", "MINUS", "MUL", "DIV", "MOD", "EQUAL",
+  "NOTEQUAL", "OR", "AND", "LT", "GT", "LE", "GE", "ASSIGN", "NEG",
+  "$accept", "STMT_LIST", "STMT", "ASG", "FLOATASG", "IFSTMT", YY_NULLPTR
 };
 #endif
 
@@ -547,16 +535,17 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292
+     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
+     295,   296,   297,   298,   299
 };
 # endif
 
-#define YYPACT_NINF -144
+#define YYPACT_NINF -20
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-144)))
+  (!!((Yystate) == (-20)))
 
-#define YYTABLE_NINF -62
+#define YYTABLE_NINF -1
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -565,26 +554,23 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     166,   203,   -17,  -144,  -144,    -4,  -144,  -144,   -11,    14,
-      43,    23,   166,  -144,  -144,  -144,    46,    56,  -144,  -144,
-      62,   234,    70,  -144,  -144,  -144,  -144,  -144,    69,    79,
-    -144,    81,   207,  -144,    65,    89,    15,    82,  -144,  -144,
-       9,  -144,    26,  -144,  -144,  -144,   203,   203,   203,   203,
-     203,  -144,  -144,    88,    57,   189,   194,  -144,  -144,   201,
-     220,    93,    92,  -144,  -144,  -144,   112,  -144,  -144,   100,
-      39,   115,   111,   123,   131,    88,   117,  -144,  -144,   234,
-    -144,   234,  -144,   234,  -144,   234,  -144,   234,   126,    44,
-    -144,  -144,  -144,   132,   139,   140,   133,   117,   117,    97,
-    -144,   148,   144,   150,    97,    82,    82,   155,   112,  -144,
-      66,   156,   158,  -144,   165,  -144,   220,   133,    68,   168,
-      31,  -144,  -144,   175,  -144,  -144,  -144,  -144,  -144,  -144,
-    -144,  -144,  -144,    86,  -144,  -144,  -144,  -144,    44,  -144,
-     178,    49,   187,   197,  -144,   204,  -144,  -144,   175,   193,
-    -144,  -144,  -144,  -144,   173,   200,   108,   119,   130,  -144,
-    -144,   208,   209,   175,   183,   175,   183,   175,   183,   141,
-     152,   212,   231,  -144,   230,  -144,   232,  -144,   175,   183,
-     175,   183,   183,  -144,   183,   183,   233,  -144,   235,  -144,
-    -144,  -144,  -144,   183,   183,  -144,  -144
+      27,    46,    -8,    -3,    49,    60,    25,    72,   -11,   -19,
+      33,    40,    75,    77,     1,    95,   -20,   -20,   -20,    59,
+     -20,    64,    66,   -20,   -20,   -20,   -20,   -20,    84,   -20,
+     -20,   -18,    83,    52,    58,   -20,   -20,   -20,   -20,   -20,
+     -20,    96,   -20,   -20,   -17,     5,     8,    22,    89,   101,
+     102,   -20,   -20,    98,   105,    24,    48,   -20,   100,   107,
+     -15,   -20,   -20,   112,   113,   114,   115,   116,   117,   118,
+     119,   -20,    86,    88,   106,    18,    19,    71,   108,   110,
+     120,   121,   122,   123,   124,   125,   126,   127,   128,   111,
+     129,   130,   131,   132,   133,   134,   135,   137,   138,   139,
+     140,   141,   142,   143,   144,   145,   146,   147,   148,   149,
+     150,    85,    87,   155,   152,   162,   -20,   -20,   -20,   -20,
+     -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,
+     -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   157,
+     164,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,
+     -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,   -20,
+     -20,   -20
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -592,167 +578,131 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,    18,    19,    46,    47,    48,     0,     0,
-       0,     0,     2,     4,     5,    14,     0,     0,    11,     6,
-       0,     0,    49,    12,    13,     8,     9,    10,    46,     0,
-      49,     0,     0,    51,     0,     0,     0,     0,     1,     3,
-      26,    15,     0,    27,    34,    35,     0,     0,     0,     0,
-       0,     7,    50,    62,    46,    47,    48,    33,    31,    49,
-      53,     0,     0,    96,    20,    22,     0,    97,    98,     0,
-       0,     0,     0,    72,    74,    62,     0,    24,    41,    36,
-      42,    37,    43,    38,    44,    39,    45,    40,     0,     0,
-      56,    57,    58,     0,    54,     0,     0,     0,     0,     0,
-      99,     0,   101,     0,     0,     0,     0,     0,    26,    25,
-       0,     0,     0,    63,    64,    52,    53,     0,     0,     0,
-      89,    21,    23,     0,    68,    94,   100,   102,    95,    76,
-     103,    73,    75,     0,    59,    60,    66,    67,     0,    55,
-       0,     0,     0,     0,    77,     0,    80,    79,    70,     0,
-      16,    17,    65,    78,     0,     0,     0,     0,     0,    71,
-      69,     0,     0,     0,    92,     0,    92,     0,    92,     0,
-       0,     0,     0,    81,     0,    85,     0,    90,     0,    92,
-       0,    92,    92,    93,    92,    92,     0,    83,     0,    87,
-      82,    86,    91,    92,    92,    84,    88
+       0,     0,     0,     0,     0,     0,     0,    16,     0,     0,
+       0,     0,     0,     0,     0,     0,     4,     5,     8,     0,
+      15,     0,     0,     6,     9,    10,    11,    12,     0,    17,
+      18,     0,     0,     0,     0,     7,    19,    20,    21,    22,
+       1,     0,     3,    14,     0,     0,     0,     0,     0,     0,
+       0,    23,    47,     0,    26,    30,     0,    29,     0,    50,
+      54,    53,     2,     0,     0,     0,     0,     0,     0,     0,
+       0,    13,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    34,    32,    35,    33,
+      36,    37,    38,    39,    40,    42,    41,    43,    44,    45,
+      46,    59,    60,    62,    61,    63,    64,    65,    66,     0,
+       0,    55,    56,    57,    58,    67,    69,    68,    70,    71,
+      73,    72,    74,    25,    49,    24,    48,    31,    27,    28,
+      52,    51
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -144,   240,  -144,     0,  -144,  -144,  -144,  -144,  -144,  -144,
-     -68,  -144,   -15,  -144,  -144,     1,   196,     6,  -144,   142,
-    -144,  -144,  -144,   180,  -144,   121,  -144,  -101,  -143,   -66,
-     151,  -144,  -144,   -92,  -144,  -144,  -122,  -144,  -144,  -144,
-    -144,  -144,  -144
+     -20,   -20,   163,   -20,   -20,   -20
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int16 yydefgoto[] =
+static const yytype_int8 yydefgoto[] =
 {
-      -1,    11,    12,   148,    14,    15,    16,    67,    97,    98,
-      41,    42,    17,    18,    19,    20,    21,    22,    60,    93,
-      94,    23,    24,    88,    89,   113,   114,   125,   149,    72,
-      73,    74,    25,   119,   120,   147,   173,    26,    69,    70,
-     102,   128,    27
+      -1,    14,    15,    16,    17,    18
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_int16 yytable[] =
+static const yytype_uint8 yytable[] =
 {
-      13,    43,    29,   130,   101,   159,    32,    30,   109,   135,
-      31,    34,    13,   164,   166,   168,    35,    57,    33,    32,
-     171,    68,   174,    38,   176,   140,   179,   181,   146,   121,
-     122,    75,   151,    58,    63,   186,    36,   188,    59,   131,
-      64,    65,    66,    76,   175,    77,   177,    78,    80,    82,
-      84,    86,    30,    30,    30,    30,    30,   187,   100,   189,
-     190,    43,   191,   192,   118,    37,    71,    32,   145,   111,
-     112,   195,   196,    40,   -28,    44,   -28,   154,   155,    33,
-     -28,    45,    43,    43,   -28,   134,   123,   127,     1,    51,
-     141,    33,    61,     5,     6,     7,   142,   143,     8,   124,
-       9,    10,    52,    53,   124,   150,   123,    62,     1,    71,
-     124,   -61,    96,     5,     6,     7,    95,   123,     8,     1,
-       9,    10,    32,    99,     5,     6,     7,   103,   163,     8,
-       1,     9,    10,   124,   104,     5,     6,     7,   105,   165,
-       8,     1,     9,    10,   108,   106,     5,     6,     7,   110,
-     167,     8,     1,     9,    10,   115,   116,     5,     6,     7,
-     117,   178,     8,     1,     9,    10,   118,   126,     5,     6,
-       7,    66,   180,     8,     1,     9,    10,   129,   133,     5,
-       6,     7,   138,   136,     8,   137,     9,    10,     1,   144,
-       2,     3,     4,     5,     6,     7,   161,     1,     8,   153,
-       9,    10,     5,     6,     7,   156,   -29,     8,   -29,     9,
-      10,   -30,   -29,   -30,   160,   157,   -29,   -30,   -32,   172,
-     -32,   -30,   158,   162,   -32,     1,   169,   170,   -32,     1,
-      28,     6,     7,   182,    54,    55,    56,    46,    47,    48,
-      49,    50,    79,    81,    83,    85,    87,    90,    91,    92,
-     183,   184,    39,   185,   193,   107,   194,   132,   139,   152
+      31,    40,    49,    63,     1,    50,    64,     2,     3,     4,
+       5,     6,    21,    22,     7,    99,   100,   101,   102,    23,
+       8,     9,    10,    11,    33,    65,    12,    13,    66,    67,
+       1,    68,    32,     2,     3,     4,     5,     6,   114,   116,
+       7,   115,   117,    69,    28,    70,     8,     9,    10,    11,
+      19,    20,    12,    13,    76,    77,    78,    79,    80,    81,
+      82,    83,    84,    85,    86,    87,    88,    53,    35,    24,
+      25,    54,    55,    56,    58,    57,    34,    59,    43,    60,
+      26,    27,    61,    89,    90,    91,    92,    93,    94,    95,
+      96,   118,    29,    30,   119,    36,    37,    38,    39,    44,
+      45,    46,    47,    51,    52,   153,   154,   155,   156,    42,
+      62,    48,    71,    72,    73,    74,    75,    97,    98,   103,
+     104,   105,   106,   107,   108,   109,   110,   113,   120,   111,
+     121,   112,   131,     0,     0,     0,     0,     0,     0,     0,
+     122,   123,   124,   125,   126,   127,   128,   129,   130,     0,
+     132,   133,   134,   135,   136,   137,   138,   139,   140,     0,
+     141,   142,   143,   144,   158,   145,   146,   147,   148,   149,
+     150,   151,   152,   157,   159,   160,   161,    41
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       0,    16,     1,   104,    70,   148,    10,     1,    76,   110,
-      27,    22,    12,   156,   157,   158,    27,    32,    22,    10,
-     163,    36,   165,     0,   167,   117,   169,   170,   120,    97,
-      98,    22,   133,    32,    19,   178,    22,   180,    32,   105,
-      25,    26,    27,    17,   166,    19,   168,    46,    47,    48,
-      49,    50,    46,    47,    48,    49,    50,   179,    19,   181,
-     182,    76,   184,   185,    33,    22,    27,    10,    37,    25,
-      26,   193,   194,    27,    17,    19,    19,    28,    29,    22,
-      23,    19,    97,    98,    27,    19,    20,   102,    22,    19,
-      22,    22,    27,    27,    28,    29,    28,    29,    32,    99,
-      34,    35,    23,    22,   104,    19,    20,    18,    22,    27,
-     110,    23,    20,    27,    28,    29,    23,    20,    32,    22,
-      34,    35,    10,    23,    27,    28,    29,    12,    20,    32,
-      22,    34,    35,   133,    23,    27,    28,    29,    15,    20,
-      32,    22,    34,    35,    27,    14,    27,    28,    29,    23,
-      20,    32,    22,    34,    35,    23,    17,    27,    28,    29,
-      20,    20,    32,    22,    34,    35,    33,    19,    27,    28,
-      29,    27,    20,    32,    22,    34,    35,    27,    23,    27,
-      28,    29,    17,    27,    32,    27,    34,    35,    22,    21,
-      24,    25,    26,    27,    28,    29,    23,    22,    32,    21,
-      34,    35,    27,    28,    29,    18,    17,    32,    19,    34,
-      35,    17,    23,    19,    21,    18,    27,    23,    17,    36,
-      19,    27,    18,    23,    23,    22,    18,    18,    27,    22,
-      27,    28,    29,    21,    27,    28,    29,     3,     4,     5,
-       6,     7,    46,    47,    48,    49,    50,    27,    28,    29,
-      19,    21,    12,    21,    21,    75,    21,   106,   116,   138
+      11,     0,    20,    20,     3,    23,    23,     6,     7,     8,
+       9,    10,    20,    21,    13,    30,    31,    32,    33,    22,
+      19,    20,    21,    22,    43,    20,    25,    26,    23,    21,
+       3,    23,    43,     6,     7,     8,     9,    10,    20,    20,
+      13,    23,    23,    21,    19,    23,    19,    20,    21,    22,
+       4,     5,    25,    26,    30,    31,    32,    33,    34,    35,
+      36,    37,    38,    39,    40,    41,    42,    15,    28,    20,
+      21,    19,    20,    21,    16,    23,    43,    19,    19,    21,
+      20,    21,    24,    35,    36,    37,    38,    39,    40,    41,
+      42,    20,    20,    21,    23,    20,    21,    20,    21,    35,
+      36,    35,    36,    20,    21,    20,    21,    20,    21,    14,
+      14,    27,    23,    12,    12,    17,    11,    17,    11,     7,
+       7,     7,     7,     7,     7,     7,     7,    21,    20,    43,
+      20,    43,    21,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      20,    20,    20,    20,    20,    20,    20,    20,    20,    -1,
+      21,    21,    21,    21,    21,    21,    21,    20,    20,    -1,
+      21,    21,    21,    21,    12,    22,    22,    22,    22,    22,
+      22,    22,    22,    18,    12,    18,    12,    14
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    22,    24,    25,    26,    27,    28,    29,    32,    34,
-      35,    39,    40,    41,    42,    43,    44,    50,    51,    52,
-      53,    54,    55,    59,    60,    70,    75,    80,    27,    53,
-      55,    27,    10,    22,    22,    27,    22,    22,     0,    39,
-      27,    48,    49,    50,    19,    19,     3,     4,     5,     6,
-       7,    19,    23,    22,    27,    28,    29,    50,    53,    55,
-      56,    27,    18,    19,    25,    26,    27,    45,    50,    76,
-      77,    27,    67,    68,    69,    22,    17,    19,    53,    54,
-      53,    54,    53,    54,    53,    54,    53,    54,    61,    62,
-      27,    28,    29,    57,    58,    23,    20,    46,    47,    23,
-      19,    67,    78,    12,    23,    15,    14,    61,    27,    48,
-      23,    25,    26,    63,    64,    23,    17,    20,    33,    71,
-      72,    48,    48,    20,    41,    65,    19,    50,    79,    27,
-      65,    67,    68,    23,    19,    65,    27,    27,    17,    57,
-      71,    22,    28,    29,    21,    37,    71,    73,    41,    66,
-      19,    65,    63,    21,    28,    29,    18,    18,    18,    66,
-      21,    23,    23,    20,    66,    20,    66,    20,    66,    18,
-      18,    66,    36,    74,    66,    74,    66,    74,    20,    66,
-      20,    66,    21,    19,    21,    21,    66,    74,    66,    74,
-      74,    74,    74,    21,    21,    74,    74
+       0,     3,     6,     7,     8,     9,    10,    13,    19,    20,
+      21,    22,    25,    26,    46,    47,    48,    49,    50,     4,
+       5,    20,    21,    22,    20,    21,    20,    21,    19,    20,
+      21,    11,    43,    43,    43,    28,    20,    21,    20,    21,
+       0,    47,    14,    19,    35,    36,    35,    36,    27,    20,
+      23,    20,    21,    15,    19,    20,    21,    23,    16,    19,
+      21,    24,    14,    20,    23,    20,    23,    21,    23,    21,
+      23,    23,    12,    12,    17,    11,    30,    31,    32,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,    42,    35,
+      36,    37,    38,    39,    40,    41,    42,    17,    11,    30,
+      31,    32,    33,     7,     7,     7,     7,     7,     7,     7,
+       7,    43,    43,    21,    20,    23,    20,    23,    20,    23,
+      20,    20,    20,    20,    20,    20,    20,    20,    20,    20,
+      20,    21,    21,    21,    21,    21,    21,    21,    21,    20,
+      20,    21,    21,    21,    21,    22,    22,    22,    22,    22,
+      22,    22,    22,    20,    21,    20,    21,    18,    12,    12,
+      18,    12
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    38,    39,    39,    40,    40,    41,    41,    41,    41,
-      41,    41,    42,    42,    42,    43,    43,    43,    44,    44,
-      46,    45,    47,    45,    48,    48,    49,    49,    50,    50,
-      50,    50,    50,    50,    51,    52,    53,    53,    53,    53,
-      53,    53,    53,    53,    53,    53,    54,    54,    54,    54,
-      54,    56,    55,    57,    57,    57,    58,    58,    58,    59,
-      60,    61,    62,    61,    63,    63,    64,    64,    65,    65,
-      66,    66,    67,    67,    68,    68,    69,    70,    70,    71,
-      71,    72,    72,    72,    72,    72,    72,    72,    72,    73,
-      73,    73,    74,    74,    75,    76,    77,    77,    77,    78,
-      78,    79,    79,    80
+       0,    45,    46,    46,    47,    47,    47,    47,    47,    47,
+      47,    47,    47,    47,    47,    47,    47,    47,    47,    47,
+      47,    47,    47,    48,    48,    48,    48,    48,    48,    48,
+      48,    48,    48,    48,    48,    48,    48,    48,    48,    48,
+      48,    48,    48,    48,    48,    48,    48,    49,    49,    49,
+      49,    49,    49,    49,    49,    49,    49,    49,    49,    49,
+      49,    49,    49,    49,    49,    49,    49,    50,    50,    50,
+      50,    50,    50,    50,    50
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     2,     1,     1,     1,     2,     1,     1,
-       1,     1,     1,     1,     1,     2,     6,     6,     1,     1,
-       0,     3,     0,     3,     2,     3,     1,     1,     3,     3,
-       3,     3,     3,     3,     2,     2,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     1,     1,     1,     1,
-       3,     0,     5,     0,     1,     3,     1,     1,     1,     6,
-       6,     0,     0,     2,     1,     3,     2,     2,     1,     3,
-       1,     2,     1,     3,     1,     3,     3,     6,     7,     2,
-       2,     5,     7,     7,     9,     5,     7,     7,     9,     0,
-       4,     6,     0,     2,     5,     3,     1,     1,     1,     1,
-       2,     0,     1,     5
+       0,     2,     3,     2,     1,     1,     2,     2,     1,     2,
+       2,     2,     2,     4,     3,     2,     1,     2,     2,     2,
+       2,     2,     2,     3,     6,     6,     3,     6,     6,     3,
+       3,     6,     5,     5,     5,     5,     5,     5,     5,     5,
+       5,     5,     5,     5,     5,     5,     5,     3,     6,     6,
+       3,     6,     6,     3,     3,     5,     5,     5,     5,     5,
+       5,     5,     5,     5,     5,     5,     5,     6,     6,     6,
+       6,     6,     6,     6,     6
 };
 
 
@@ -1428,278 +1378,751 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 15:
-#line 101 "c_comp.y" /* yacc.c:1646  */
-    {}
-#line 1435 "c_comp.tab.c" /* yacc.c:1646  */
+        case 6:
+#line 55 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "j %s\n", (yyvsp[0].idName));
+    }
+#line 1387 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 7:
+#line 59 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "%s:\n", (yyvsp[-1].idName));
+    }
+#line 1395 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 64 "inter.y" /* yacc.c:1646  */
+    {
+        parOffset += INTSIZE;
+        fprintf(mips, "sub $sp, $sp, %d\n", INTSIZE); 
+        fprintf(mips, "sw $t%c, 0($sp)\n", (yyvsp[0].idName)[1]);    
+    }
+#line 1405 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 70 "inter.y" /* yacc.c:1646  */
+    {
+        parOffset += FLOATSIZE;
+        fprintf(mips, "sub $sp, $sp, %d\n", FLOATSIZE);   
+        fprintf(mips, "mfc1 $s0, $f%s\n", (yyvsp[0].idName)+1);             
+        fprintf(mips, "sw $s0, 0($sp)\n");                 
+    }
+#line 1416 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 11:
+#line 77 "inter.y" /* yacc.c:1646  */
+    {
+        retVal = string((yyvsp[0].idName));
+    }
+#line 1424 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 81 "inter.y" /* yacc.c:1646  */
+    {
+        retVal = string((yyvsp[0].idName));
+    }
+#line 1432 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 85 "inter.y" /* yacc.c:1646  */
+    {
+        int frameSize = getFunctionOffset(funcLst, actFunc); 
+        saveRegisters(frameSize+parOffset);       
+        fprintf(mips, "jal %s\n", (yyvsp[-2].idName));                     
+        retrieveRegisters(frameSize+parOffset);   
+        if(retVal==""){
+
+        } else if(retVal[0] == 'F'){
+            fprintf(mips, "move $s0, $v0\n");  
+            fprintf(mips, "mtc1 $s0, $f%s\n", retVal.c_str()+1);   
+        } else {
+            fprintf(mips, "move $t%c, $v0\n", retVal[1]);   
+        }
+        int funcParamOffset = getParset(funcLst, string((yyvsp[-2].idName)));
+        fprintf(mips, "add $sp, $sp, %d\n", funcParamOffset); 
+        parOffset-=funcParamOffset;
+        retVal = "";
+    }
+#line 1455 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 104 "inter.y" /* yacc.c:1646  */
+    {
+        actFunc = string((yyvsp[0].idName));
+        fprintf(mips, "%s:\n", (yyvsp[0].idName));
+        int frameSize = getFunctionOffset(funcLst, actFunc);
+        fprintf(mips, "subu $sp, $sp, %d\n", frameSize);
+        fprintf(mips, "sw $ra, %d($sp)\n", frameSize-INTSIZE);
+        fprintf(mips, "sw $fp, %d($sp)\n", frameSize-2*INTSIZE);
+        fprintf(mips, "move $fp, $sp\n");
+    }
+#line 1469 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 114 "inter.y" /* yacc.c:1646  */
+    {
+        int frameSize = getFunctionOffset(funcLst, actFunc);
+        fprintf(mips, "end_%s:\n", actFunc.c_str());
+        fprintf(mips, "move $sp, $fp\n");                          
+        fprintf(mips, "lw $ra, %d($sp)\n", frameSize-INTSIZE);     
+        fprintf(mips, "lw $fp, %d($sp)\n", frameSize-2*INTSIZE);   
+        fprintf(mips, "addu $sp, $sp, %d\n", frameSize);           
+        fprintf(mips, "j $ra\n");                                  
+    }
+#line 1483 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 101 "c_comp.y" /* yacc.c:1646  */
-    {func_call_details * fc= get_func_details((yyvsp[-4].id_attributes).id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=decl_type_check; fc->f_name=(yyvsp[-4].id_attributes).id_name; (yyval.f_attributes)=fc; (yyval.f_attributes)->args=func_arg_list; (yyval.f_attributes)->n_args=arg_no; func_list.push_back((yyval.f_attributes));}
-#line 1441 "c_comp.tab.c" /* yacc.c:1646  */
+#line 124 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "j end_%s\n", actFunc.c_str());
+    }
+#line 1491 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 104 "c_comp.y" /* yacc.c:1646  */
-    {func_call_details * fc=new func_call_details(); fc->f_type=decl_type_check; fc->f_name=(yyvsp[-4].id_attributes).id_name; (yyval.f_attributes)=fc; (yyval.f_attributes)->args=func_arg_list; (yyval.f_attributes)->n_args=arg_no; func_call_details *fc1= get_func_details((yyval.f_attributes)->f_name); if(fc1) {if(fc1->f_type != (yyval.f_attributes)->f_type || fc1->n_args !=(yyval.f_attributes)->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=(yyval.f_attributes)->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back((yyval.f_attributes));}
-#line 1447 "c_comp.tab.c" /* yacc.c:1646  */
+#line 128 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "move $v0, $t%c\n", (yyvsp[0].idName)[1]);
+        fprintf(mips, "j end_%s\n", actFunc.c_str());
+    }
+#line 1500 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 105 "c_comp.y" /* yacc.c:1646  */
-    {decl_type_check=1; cout<<"1 dec "<<decl_type_check<<endl;}
-#line 1453 "c_comp.tab.c" /* yacc.c:1646  */
+#line 133 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mfc1 $s0, $f%s\n", (yyvsp[0].idName)+1);
+        fprintf(mips, "move $v0, $s0\n");
+        fprintf(mips, "j end_%s\n", actFunc.c_str());
+    }
+#line 1510 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 105 "c_comp.y" /* yacc.c:1646  */
-    {decl_type_check=2; cout<<"1 dec "<<decl_type_check<<endl;}
-#line 1459 "c_comp.tab.c" /* yacc.c:1646  */
+#line 139 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "move $a0, $t%s\n", (yyvsp[0].idName)+1);
+        fprintf(mips, "li $v0 1\n");
+        fprintf(mips, "syscall\n");
+        fprintf(mips, "li $v0, 4\n");
+        fprintf(mips, "la $a0, endline\n");
+        fprintf(mips, "syscall\n");
+    }
+#line 1523 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 107 "c_comp.y" /* yacc.c:1646  */
-    {decl_type_check=1;}
-#line 1465 "c_comp.tab.c" /* yacc.c:1646  */
+#line 148 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mov.s $f12, $f%s\n", (yyvsp[0].idName)+1);
+        fprintf(mips, "li $v0 2\n");
+        fprintf(mips, "syscall\n");
+        fprintf(mips, "li $v0, 4\n");
+        fprintf(mips, "la $a0, endline\n");
+        fprintf(mips, "syscall\n");
+    }
+#line 1536 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 21:
+#line 157 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $v0 5\n");
+        fprintf(mips, "syscall\n");
+        fprintf(mips, "move $t%s, $v0\n", (yyvsp[0].idName)+1);
+    }
+#line 1546 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 107 "c_comp.y" /* yacc.c:1646  */
-    {decl_type_check=2;}
-#line 1471 "c_comp.tab.c" /* yacc.c:1646  */
+#line 163 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $v0 6\n");
+        fprintf(mips, "syscall\n");
+        fprintf(mips, "mov.s $f%s, $f0\n", (yyvsp[0].idName)+1);
+    }
+#line 1556 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 172 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-2].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "sw $t%c, %d($sp)\n", (yyvsp[0].idName)[1], offset);
+        } else {
+            fprintf(mips, "sw $t%s, %s\n", (yyvsp[0].idName)+1, (yyvsp[-2].idName)); 
+        }
+    }
+#line 1569 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 109 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-1].id_attributes).id_type!=decl_type_check) {cout<<"typE mismatch\n"; exit(0);} cout<<"2\n";}
-#line 1477 "c_comp.tab.c" /* yacc.c:1646  */
+#line 181 "inter.y" /* yacc.c:1646  */
+    {
+       
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-5].idName)), 0, isGlobal)+parOffset;
+        fprintf(mips, "sw $t%c, %d($sp)\n", (yyvsp[-3].idName)[1], offset);
+    }
+#line 1579 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 109 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=decl_type_check) {cout<<"typE mismatch\n"; exit(0);}}
-#line 1483 "c_comp.tab.c" /* yacc.c:1646  */
+#line 187 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-5].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-3].idName)+1, (yyvsp[-3].idName)+1, INTSIZE);
+            fprintf(mips,"li $s1, %d\n", offset);
+            fprintf(mips,"addu $s0, $sp, $s1\n");
+            fprintf(mips,"sub $s0, $s0, $t%s\n", (yyvsp[-3].idName)+1);
+            fprintf(mips,"sw $t%s, 0($s0)\n", (yyvsp[0].idName)+1);
+        } else {
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-3].idName)+1, (yyvsp[-3].idName)+1, INTSIZE);
+            fprintf(mips,"la $s1, %s\n", (yyvsp[-5].idName));
+            fprintf(mips,"addu $s0, $s1, $t%s\n", (yyvsp[-3].idName)+1);
+            fprintf(mips,"sw $t%s, 0($s0)\n", (yyvsp[0].idName)+1);
+        }
+    }
+#line 1599 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 110 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type = (yyvsp[0].id_attributes).id_type = decl_type_check; cout<<"3"<<endl;}
-#line 1489 "c_comp.tab.c" /* yacc.c:1646  */
+#line 203 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[0].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "lw $t%c, %d($sp)\n", (yyvsp[-2].idName)[1], offset);
+        } else {
+            fprintf(mips, "lw $t%c, %s\n", (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+        }
+    }
+#line 1612 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 110 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[0].id_attributes).id_type!=decl_type_check) {cout<<"tYPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type = (yyvsp[0].id_attributes).id_type; if((yyvsp[0].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1495 "c_comp.tab.c" /* yacc.c:1646  */
+#line 212 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-3].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-1].idName)+1, (yyvsp[-1].idName)+1, INTSIZE);
+            fprintf(mips,"li $s1, %d\n", offset);
+            fprintf(mips,"addu $s0, $sp, $s1\n");
+            fprintf(mips,"sub $s0, $s0, $t%s\n", (yyvsp[-1].idName)+1);
+            fprintf(mips,"lw $t%s, 0($s0)\n", (yyvsp[-5].idName)+1);
+        } else {
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-1].idName)+1, (yyvsp[-1].idName)+1, INTSIZE);
+            fprintf(mips,"la $s0, %s\n", (yyvsp[-3].idName));
+            fprintf(mips,"addu $s0, $s0, $t%s\n", (yyvsp[-3].idName)+1);
+            fprintf(mips,"lw $t%s, 0($s0)\n", (yyvsp[-5].idName)+1);
+        }
+    }
+#line 1632 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 111 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type = (yyvsp[-2].id_attributes).id_type; if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val=(yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1501 "c_comp.tab.c" /* yacc.c:1646  */
+#line 228 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-3].idName)), 0, isGlobal)+parOffset;
+        fprintf(mips, "sw $t%c, %d($sp)\n", (yyvsp[-5].idName)[1], offset);
+    }
+#line 1641 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 112 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=1) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type=1; (yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val=(yyvsp[0].ival);}
-#line 1507 "c_comp.tab.c" /* yacc.c:1646  */
+#line 233 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, %s\n", (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+    }
+#line 1649 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 113 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=2) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type=2; (yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val=(yyvsp[0].fval);}
-#line 1513 "c_comp.tab.c" /* yacc.c:1646  */
+#line 237 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "move $t%c, $t%c\n", (yyvsp[-2].idName)[1], (yyvsp[0].idName)[3]);
+    }
+#line 1657 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 114 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type=(yyvsp[-2].id_attributes).id_type; if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val=(yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1519 "c_comp.tab.c" /* yacc.c:1646  */
+#line 241 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "cvt.w.s $f%s, $f%s\n", (yyvsp[-1].idName)+1, (yyvsp[-1].idName)+1);
+        fprintf(mips, "mfc1 $t%c, $f%s\n", (yyvsp[-5].idName)[1], (yyvsp[-1].idName)+1);
+    }
+#line 1666 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 115 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].f_attributes)->f_type) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type=(yyvsp[-2].id_attributes).id_type; if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val=(yyvsp[0].f_attributes)->i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val=(yyvsp[0].f_attributes)->f_val;}}
-#line 1525 "c_comp.tab.c" /* yacc.c:1646  */
+#line 246 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "addu $t%c, $t%c, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+    }
+#line 1674 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 116 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"tyPe mismatch\n"; exit(0);} (yyval.id_attributes).id_type=(yyvsp[-2].id_attributes).id_type; if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val=(yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1531 "c_comp.tab.c" /* yacc.c:1646  */
+#line 250 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "subu $t%c, $t%c, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+    }
+#line 1682 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 118 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type = (yyvsp[-1].id_attributes).id_type; if((yyvsp[-1].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-1].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-1].id_attributes).f_val;}}
-#line 1537 "c_comp.tab.c" /* yacc.c:1646  */
+#line 254 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "add $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1690 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 258 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sub $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1698 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 121 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val + (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val + (yyvsp[0].id_attributes).f_val;}}
-#line 1543 "c_comp.tab.c" /* yacc.c:1646  */
+#line 262 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mul $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1706 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 122 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val - (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val - (yyvsp[0].id_attributes).f_val;}}
-#line 1549 "c_comp.tab.c" /* yacc.c:1646  */
+#line 266 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "div $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+        fprintf(mips, "mflo $t%c\n", (yyvsp[-4].idName)[1]);
+    }
+#line 1715 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 123 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val * (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val * (yyvsp[0].id_attributes).f_val;}}
-#line 1555 "c_comp.tab.c" /* yacc.c:1646  */
+#line 271 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "div $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+        fprintf(mips, "mfhi $t%c\n", (yyvsp[-4].idName)[1]);
+    }
+#line 1724 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 124 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val / (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val / (yyvsp[0].id_attributes).f_val;}}
-#line 1561 "c_comp.tab.c" /* yacc.c:1646  */
+#line 276 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "seq $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1732 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 125 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val % (yyvsp[0].id_attributes).i_val;} else {printf("mod only in int\n"); exit(0);}}
-#line 1567 "c_comp.tab.c" /* yacc.c:1646  */
+#line 280 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sne $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1740 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 126 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val + (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val + (yyvsp[0].id_attributes).f_val;}}
-#line 1573 "c_comp.tab.c" /* yacc.c:1646  */
+#line 284 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sne $t%c, $t%c, 0\n", (yyvsp[-2].idName)[1], (yyvsp[-2].idName)[1]);
+        fprintf(mips, "sne $t%c, $t%c, 0\n", (yyvsp[0].idName)[1], (yyvsp[0].idName)[1]);
+        fprintf(mips, "and $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1750 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 127 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val - (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val - (yyvsp[0].id_attributes).f_val;}}
-#line 1579 "c_comp.tab.c" /* yacc.c:1646  */
+#line 290 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "or $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1758 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 128 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val * (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val * (yyvsp[0].id_attributes).f_val;}}
-#line 1585 "c_comp.tab.c" /* yacc.c:1646  */
+#line 294 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "slt $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1766 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 129 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val / (yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-2].id_attributes).f_val / (yyvsp[0].id_attributes).f_val;}}
-#line 1591 "c_comp.tab.c" /* yacc.c:1646  */
+#line 298 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sgt $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1774 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 130 "c_comp.y" /* yacc.c:1646  */
-    {if((yyvsp[-2].id_attributes).id_type!=(yyvsp[0].id_attributes).id_type) {cout<<"Type mismatch\n"; exit(0);} if((yyvsp[-2].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-2].id_attributes).i_val % (yyvsp[0].id_attributes).i_val;} else {printf("mod only in int\n"); exit(0);}}
-#line 1597 "c_comp.tab.c" /* yacc.c:1646  */
+#line 302 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sle $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1782 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 131 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type=(yyvsp[0].id_attributes).id_type; if((yyvsp[0].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[0].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1603 "c_comp.tab.c" /* yacc.c:1646  */
+#line 306 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sge $t%c, $t%c, $t%c\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName)[1]);
+    }
+#line 1790 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 131 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type=1; (yyval.id_attributes).i_val=(yyvsp[0].ival);}
-#line 1609 "c_comp.tab.c" /* yacc.c:1646  */
+#line 312 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-2].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "s.s $f%s, %d($sp)\n", (yyvsp[0].idName)+1, offset);
+        } else {
+            fprintf(mips, "s.s $f%s, %s\n", (yyvsp[0].idName)+1, (yyvsp[-2].idName));
+        }
+    }
+#line 1803 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 131 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type=2; (yyval.id_attributes).f_val=(yyvsp[0].fval);}
-#line 1615 "c_comp.tab.c" /* yacc.c:1646  */
+#line 321 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-5].idName)), 0, isGlobal)+parOffset;
+        fprintf(mips, "s.s $f%s, %d($sp)\n", (yyvsp[-3].idName)+1, offset);
+    }
+#line 1812 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 131 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type=(yyvsp[0].f_attributes)->f_type; if((yyval.id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[0].f_attributes)->i_val;} else {(yyval.id_attributes).f_val=(yyvsp[0].f_attributes)->f_val;}}
-#line 1621 "c_comp.tab.c" /* yacc.c:1646  */
+#line 326 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-5].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-3].idName)+1, (yyvsp[-3].idName)+1, INTSIZE);
+            fprintf(mips,"li $s1, %d\n", offset);
+            fprintf(mips,"addu $s0, $sp, $s1\n");
+            fprintf(mips,"sub $s0, $s0, $t%s\n", (yyvsp[-3].idName)+1);
+            fprintf(mips,"s.s $f%s, 0($s0)\n", (yyvsp[0].idName)+1);
+        } else {
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-3].idName)+1, (yyvsp[-3].idName)+1, INTSIZE);
+            fprintf(mips,"la $s1, %s\n", (yyvsp[-5].idName));
+            fprintf(mips,"addu $s0, $s1, $t%s\n", (yyvsp[-3].idName)+1);
+            fprintf(mips,"s.s $f%s, 0($s0)\n", (yyvsp[0].idName)+1);
+        }
+    }
+#line 1832 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 131 "c_comp.y" /* yacc.c:1646  */
-    {(yyval.id_attributes).id_type = (yyvsp[-1].id_attributes).id_type; if((yyvsp[-1].id_attributes).id_type==1) {(yyval.id_attributes).i_val=(yyvsp[-1].id_attributes).i_val;} else {(yyval.id_attributes).f_val=(yyvsp[-1].id_attributes).f_val;}}
-#line 1627 "c_comp.tab.c" /* yacc.c:1646  */
+#line 342 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[0].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "l.s $f%s, %d($sp)\n", (yyvsp[-2].idName)+1, offset);
+        } else {
+            fprintf(mips, "l.s $f%s, %s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName));
+        }
+    }
+#line 1845 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 133 "c_comp.y" /* yacc.c:1646  */
-    {func_call_details * fc= get_func_details((yyvsp[-1].id_attributes).id_name); arg_no= fc->n_args; func_arg_list= fc->args; check_arg_no=0; (yyval.f_attributes)->f_type=fc->f_type;}
-#line 1633 "c_comp.tab.c" /* yacc.c:1646  */
+#line 351 "inter.y" /* yacc.c:1646  */
+    {
+        int offset = getset(funcLst, gblVars, actFunc, string((yyvsp[-3].idName)), 0, isGlobal)+parOffset;
+        if(!isGlobal){
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-1].idName)+1, (yyvsp[-1].idName)+1, INTSIZE);
+            fprintf(mips, "subu $s0, $sp, $t%s\n", (yyvsp[-1].idName)+1);
+            fprintf(mips, "l.s $f%s, %d($s0)\n", (yyvsp[-5].idName)+1, offset);
+        } else {
+            fprintf(mips, "mul $t%s, $t%s, %d\n", (yyvsp[-1].idName)+1, (yyvsp[-1].idName)+1, INTSIZE);
+            fprintf(mips,"la $s1, %s\n", (yyvsp[-3].idName));
+            fprintf(mips,"addu $s0, $s1, $t%s\n", (yyvsp[-1].idName)+1);
+            fprintf(mips,"l.s $f%s, 0($s0)\n", (yyvsp[-5].idName)+1);
+        }
+    }
+#line 1863 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 133 "c_comp.y" /* yacc.c:1646  */
-    {if((yyval.f_attributes)->f_type==1) {(yyval.f_attributes)->i_val = eval_int_func((yyvsp[-4].id_attributes).id_name);} else if((yyval.f_attributes)->f_type==2) {(yyval.f_attributes)->f_val = eval_float_func((yyvsp[-4].id_attributes).id_name);} else {eval_void_func((yyvsp[-4].id_attributes).id_name);}}
-#line 1639 "c_comp.tab.c" /* yacc.c:1646  */
+#line 365 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mtc1 $t%c, $f%s\n", (yyvsp[-1].idName)[1], (yyvsp[-5].idName)+1);
+        fprintf(mips, "cvt.s.w $f%s, $f%s\n", (yyvsp[-5].idName)+1, (yyvsp[-5].idName)+1);
+    }
+#line 1872 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 370 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li.s $f%s, %s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName));
+    }
+#line 1880 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 374 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mov.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+    }
+#line 1888 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 378 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "add.s $f%s, $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+    }
+#line 1896 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 135 "c_comp.y" /* yacc.c:1646  */
-    {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != (yyvsp[0].id_attributes).id_type) {cout<<"type mismatch while calling\n"; exit(0);} if(fa->arg_type==1) {fa->i_val=(yyvsp[0].id_attributes).i_val;} else {fa->f_val=(yyvsp[0].id_attributes).f_val;}}
-#line 1645 "c_comp.tab.c" /* yacc.c:1646  */
+#line 382 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "sub.s $f%s, $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+    }
+#line 1904 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 136 "c_comp.y" /* yacc.c:1646  */
-    {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != 1) {cout<<"type mismatch while calling\n"; exit(0);} fa->i_val=(yyvsp[0].ival);}
-#line 1651 "c_comp.tab.c" /* yacc.c:1646  */
+#line 386 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mul.s $f%s, $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+    }
+#line 1912 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 137 "c_comp.y" /* yacc.c:1646  */
-    {if(check_arg_no >= arg_no) {cout<<"no of args error\n"; exit(0);} func_arg * fa=func_arg_list[check_arg_no]; check_arg_no++; if(fa->arg_type != 2) {cout<<"type mismatch while calling\n"; exit(0);} fa->f_val=(yyvsp[0].fval);}
-#line 1657 "c_comp.tab.c" /* yacc.c:1646  */
+#line 390 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "div.s $f%s, $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+    }
+#line 1920 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 139 "c_comp.y" /* yacc.c:1646  */
-    {func_call_details * fc= get_func_details((yyvsp[-4].id_attributes).id_name); if(fc) {cout<<"func already exists\n"; exit(0);} fc=new func_call_details(); fc->f_type=0; fc->f_name=(yyvsp[-4].id_attributes).id_name; (yyval.f_attributes)=fc; (yyval.f_attributes)->args=func_arg_list; (yyval.f_attributes)->n_args=arg_no; func_list.push_back((yyval.f_attributes));}
-#line 1663 "c_comp.tab.c" /* yacc.c:1646  */
+#line 394 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.eq.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 1933 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 147 "c_comp.y" /* yacc.c:1646  */
-    {func_call_details * fc=new func_call_details(); fc->f_type=0; fc->f_name=(yyvsp[-4].id_attributes).id_name; (yyval.f_attributes)=fc; (yyval.f_attributes)->args=func_arg_list; (yyval.f_attributes)->n_args=arg_no; func_call_details *fc1= get_func_details((yyval.f_attributes)->f_name); if(fc1) {if(fc1->f_type != (yyval.f_attributes)->f_type || fc1->n_args !=(yyval.f_attributes)->n_args) {cout<<"multiple func definition\n"; exit(0);} for(int i=0;i<fc1->n_args;i++) {if(fc1->args[i]->arg_type!=(yyval.f_attributes)->args[i]->arg_type) {cout<<"multiple func definition\n"; exit(0);}}} func_list.push_back((yyval.f_attributes));}
-#line 1669 "c_comp.tab.c" /* yacc.c:1646  */
+#line 403 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.eq.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 1946 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 412 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li.d $f31, 0\n");
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[-2].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 1962 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 163 "c_comp.y" /* yacc.c:1646  */
-    {arg_no=0; vector<func_arg *> templist; func_arg_list=templist;}
-#line 1675 "c_comp.tab.c" /* yacc.c:1646  */
+#line 424 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li.d $f31, 0\n");
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[-2].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 1978 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 436 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.lt.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 1991 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 445 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.le.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 2004 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 454 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.le.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 2017 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 165 "c_comp.y" /* yacc.c:1646  */
-    {func_arg * fa=new func_arg(); fa->arg_type=1; fa->arg_name=(yyvsp[0].id_attributes).id_name; func_arg_list.push_back(fa); arg_no++;}
-#line 1681 "c_comp.tab.c" /* yacc.c:1646  */
+#line 463 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $t%c, 1\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "c.lt.s $f%s, $f%s\n", (yyvsp[-2].idName)+1, (yyvsp[0].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $t%c, 0\n", (yyvsp[-4].idName)[1]);
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        ftLabel++;
+    }
+#line 2030 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 165 "c_comp.y" /* yacc.c:1646  */
-    {func_arg * fa=new func_arg(); fa->arg_type=2; fa->arg_name=(yyvsp[0].id_attributes).id_name; func_arg_list.push_back(fa); arg_no++;}
-#line 1687 "c_comp.tab.c" /* yacc.c:1646  */
+#line 474 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "beq $t%c, $t%c, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+    }
+#line 2038 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 478 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "bne $t%c, $t%c, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName)[1], (yyvsp[0].idName));
+    }
+#line 2046 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 482 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "beq $t%c, %s, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName), (yyvsp[0].idName));
+    }
+#line 2054 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 486 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "bne $t%c, %s, %s\n", (yyvsp[-4].idName)[1], (yyvsp[-2].idName), (yyvsp[0].idName));
+    }
+#line 2062 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 490 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $s0, 1\n");
+        fprintf(mips, "c.eq.s $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1);
+        fprintf(mips, "bc1t FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $s0, 0\n");
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        fprintf(mips, "beq $s0, 1, %s\n", (yyvsp[0].idName));
+        ftLabel++;
+    }
+#line 2076 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 179 "c_comp.y" /* yacc.c:1646  */
-    {printf("hi");}
-#line 1693 "c_comp.tab.c" /* yacc.c:1646  */
+#line 500 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "li $s0, 1\n");
+        fprintf(mips, "c.eq.s $f%s, $f%s\n", (yyvsp[-4].idName)+1, (yyvsp[-2].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $s0, 0\n");
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        fprintf(mips, "beq $s0, 1, %s\n", (yyvsp[0].idName));
+        ftLabel++;
+    }
+#line 2090 "inter.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 179 "c_comp.y" /* yacc.c:1646  */
-    {printf("bi");}
-#line 1699 "c_comp.tab.c" /* yacc.c:1646  */
+#line 510 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mtc1 $0, $f31\n");
+        fprintf(mips, "cvt.s.w $f31, $f31\n");
+        fprintf(mips, "li $s0, 1\n");
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[-4].idName)+1);
+        fprintf(mips, "bc1t FLOAT%d\n", ftLabel);
+        fprintf(mips, "li $s0, 0\n");
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        fprintf(mips, "beq $s0, 1, %s\n", (yyvsp[0].idName));
+        ftLabel++;
+    }
+#line 2106 "inter.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 74:
+#line 522 "inter.y" /* yacc.c:1646  */
+    {
+        fprintf(mips, "mtc1 $0, $f31\n");
+        fprintf(mips, "cvt.s.w $f31, $f31\n");
+        fprintf(mips, "li $s0, 1\n");
+        fprintf(mips, "c.eq.s $f%s, $f31\n", (yyvsp[-4].idName)+1);
+        fprintf(mips, "bc1f FLOAT%d\n", ftLabel); // goto label float when equal to 0
+        fprintf(mips, "li $s0, 0\n");
+        fprintf(mips, "FLOAT%d:\n", ftLabel);
+        fprintf(mips, "beq $s0, 1, %s\n", (yyvsp[0].idName));
+        ftLabel++;
+    }
+#line 2122 "inter.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1703 "c_comp.tab.c" /* yacc.c:1646  */
+#line 2126 "inter.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1927,52 +2350,49 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 202 "c_comp.y" /* yacc.c:1906  */
+#line 535 "inter.y" /* yacc.c:1906  */
 
 
-
-int main()
-{
-  yyparse();
-  printf("\nValid\n");
-  return 0;
-}
-
-void yyerror(const char *s)
-{
-  printf("ERROR: %s\n", s);
-  exit(0);
-}
-
-int eval_int_func(char *f_name)
-{
-
-}
-
-float eval_float_func(char *f_name)
-{
-
-}
-
-void eval_void_func(char *f_name)
-{
-
-}
-
-func_call_details * get_func_details(char *fname)
-{
-  // first find if func exists it should return
-  for(int i=0;i<func_list.size();i++)
-  {
-    if(func_list[i]->f_name==fname)
-    {
-      return func_list[i];
+void saveRegisters(int frameSize){
+    for(int i=0; i<10; i++){
+        fprintf(mips, "sw $t%d, %d($sp)\n", i, frameSize-2*INTSIZE-(i+1)*INTSIZE);
     }
-  }
-  return NULL;
+    for(int i=0; i<11; i++){
+        fprintf(mips, "s.s $f%d, %d($sp)\n", i, frameSize-2*INTSIZE-(i+11)*INTSIZE);
+    }
 }
 
-void eval_func()
-{
+void retrieveRegisters(int frameSize){
+    for(int i=0; i<10; i++){
+        fprintf(mips, "lw $t%d, %d($sp)\n", i, frameSize-2*INTSIZE-(i+1)*INTSIZE);
+    }
+    for(int i=0; i<11; i++){
+        fprintf(mips, "l.s $f%d, %d($sp)\n", i, frameSize-2*INTSIZE-(i+11)*INTSIZE);
+    }
+}
 
+void yyerror(char *s)
+{      
+    printf("\nSyntax error %s at line %d\n", s, yylineno);
+    fflush(stdout);
+}
+
+int main(int argc, char **argv)
+{
+    rdSymTab(funcLst, gblVars);
+    retVal = ""; 
+    isGlobal = false;
+    mips = fopen("mips.s", "w");
+    fflush(mips);
+    fprintf(mips,".data\n");
+    for(auto it : gblVars){
+        fprintf(mips, "%s: .space %d\n", it.name.c_str(), 4*(it.variableoffset));
+    }
+    fprintf(mips,"endline: .asciiz \"\\n\"\n");
+    fprintf(mips,".text\n");
+    parOffset = 0;
+    ftLabel = 0;
+    yyparse();
+    fflush(mips);
+    fclose(mips);
 }
